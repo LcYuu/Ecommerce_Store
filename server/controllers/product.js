@@ -7,6 +7,7 @@ const createProduct = asyncHandler(async (req, res) => {
   const { title, price, description, brand, category, color } = req.body
   const thumb = req?.files?.thumb[0]?.path
   const images = req.files?.images?.map((el) => el.path)
+
   if (!(title && price && description && brand && category && color))
     throw new Error("Missing inputs")
   req.body.slug = slugify(title)
@@ -131,6 +132,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user
   const { star, comment, pid, updatedAt } = req.body
+  const images = req?.files?.images?.map((el) => el.path)
+
   if (!star || !pid) throw new Error("Missing inputs")
   const ratingProduct = await Product.findById(pid)
   const alreadyRating = ratingProduct?.ratings?.find(
@@ -147,6 +150,7 @@ const ratings = asyncHandler(async (req, res) => {
         $set: {
           "ratings.$.star": star,
           "ratings.$.comment": comment,
+          "ratings.$.images": images,
           "ratings.$.updatedAt": updatedAt,
         },
       },
@@ -157,7 +161,7 @@ const ratings = asyncHandler(async (req, res) => {
     await Product.findByIdAndUpdate(
       pid,
       {
-        $push: { ratings: { star, comment, postedBy: _id, updatedAt } },
+        $push: { ratings: { star, comment, postedBy: _id, updatedAt, images } },
       },
       { new: true }
     )
