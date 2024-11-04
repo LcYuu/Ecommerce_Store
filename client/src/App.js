@@ -1,5 +1,5 @@
-import React, { useEffect } from "react"
-import { Route, Routes } from "react-router-dom"
+import React, { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import {
   Login,
   Home,
@@ -12,7 +12,8 @@ import {
   FinalRegister,
   ResetPassword,
   DetailCart,
-} from "pages/public"
+  LoginSuccess,
+} from "pages/public";
 import {
   AdminLayout,
   ManageOrder,
@@ -22,30 +23,30 @@ import {
   Dashboard,
   CreateBlog,
   ManageBlog,
-} from "pages/admin"
+} from "pages/admin";
 import {
   MemberLayout,
   Personal,
   History,
   Wishlist,
   Checkout,
-} from "pages/member"
-import path from "ultils/path"
-import { getCategories } from "store/app/asyncActions"
-import { useDispatch, useSelector } from "react-redux"
-import { ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { Cart, Modal } from "components"
-import { showCart } from "store/app/appSlice"
+} from "pages/member";
+import path from "ultils/path";
+import { getCategories } from "store/app/asyncActions";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Cart, Modal } from "components";
+import { showCart } from "store/app/appSlice";
 
 function App() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { isShowModal, modalChildren, isShowCart } = useSelector(
     (state) => state.app
-  )
+  );
   useEffect(() => {
-    dispatch(getCategories())
-  }, [])
+    dispatch(getCategories());
+  }, []);
   return (
     <div className="font-jp">
       {isShowCart && (
@@ -89,6 +90,7 @@ function App() {
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />
+        <Route path={path.LOGIN_SUCCESS} element={<LoginSuccess />} />
       </Routes>
       <ToastContainer
         position="top-right"
@@ -104,7 +106,7 @@ function App() {
       {/* Same as */}
       <ToastContainer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

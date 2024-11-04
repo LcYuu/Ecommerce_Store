@@ -3,6 +3,7 @@ const path = {
   HOME: "",
   ALL: "*",
   LOGIN: "login",
+  LOGIN_SUCCESS: "login-success/:userId",
   PRODUCTS__CATEGORY: ":category",
   BLOGS__ID__TITLE: "blogs/:id/:title",
   BLOGS: "blogs",
@@ -31,6 +32,6 @@ const path = {
   MY_CART: "my-cart",
   HISTORY: "buy-history",
   WISHLIST: "wishlist",
-}
+};
 
-export default path
+export default path;

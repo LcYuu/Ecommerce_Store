@@ -1,35 +1,36 @@
-import React, { useState, useCallback, useEffect } from "react"
-import { InputField, Button, Loading } from "components"
+import React, { useState, useCallback, useEffect } from "react";
+import { InputField, Button, Loading } from "components";
 import {
   apiRegister,
   apiLogin,
   apiForgotPassword,
   apiFinalRegister,
-} from "apis/user"
-import Swal from "sweetalert2"
-import { useNavigate, Link, useSearchParams } from "react-router-dom"
-import path from "ultils/path"
-import { login } from "store/user/userSlice"
-import { showModal } from "store/app/appSlice"
-import { useDispatch } from "react-redux"
-import { toast } from "react-toastify"
-import { validate } from "ultils/helpers"
+} from "apis/user";
+import Swal from "sweetalert2";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import path from "ultils/path";
+import { login } from "store/user/userSlice";
+import { showModal } from "store/app/appSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { validate } from "ultils/helpers";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 
 const Login = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [payload, setPayload] = useState({
     email: "",
     password: "",
     firstname: "",
     lastname: "",
     mobile: "",
-  })
-  const [isVerifiedEmail, setIsVerifiedEmail] = useState(false)
-  const [invalidFields, setInvalidFields] = useState([])
-  const [isRegister, setIsRegister] = useState(false)
-  const [isForgotPassword, setIsForgotPassword] = useState(false)
-  const [searchParams] = useSearchParams()
+  });
+  const [isVerifiedEmail, setIsVerifiedEmail] = useState(false);
+  const [invalidFields, setInvalidFields] = useState([]);
+  const [isRegister, setIsRegister] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [searchParams] = useSearchParams();
   const resetPayload = () => {
     setPayload({
       email: "",
@@ -37,36 +38,37 @@ const Login = () => {
       firstname: "",
       lastname: "",
       mobile: "",
-    })
-  }
-  const [token, setToken] = useState("")
-  const [email, setEmail] = useState("")
+    });
+  };
+  const [token, setToken] = useState("");
+  const [email, setEmail] = useState("");
   const handleForgotPassword = async () => {
-    const response = await apiForgotPassword({ email })
+    const response = await apiForgotPassword({ email });
     if (response.success) {
-      toast.success(response.mes, { theme: "colored" })
-    } else toast.info(response.mes, { theme: "colored" })
-  }
+      toast.success(response.mes, { theme: "colored" });
+    } else toast.info(response.mes, { theme: "colored" });
+  };
   useEffect(() => {
-    resetPayload()
-  }, [isRegister])
+    resetPayload();
+  }, [isRegister]);
   // SUBMIT
   const handleSubmit = useCallback(async () => {
-    const { firstname, lastname, mobile, ...data } = payload
+    const { firstname, lastname, mobile, ...data } = payload;
 
     const invalids = isRegister
       ? validate(payload, setInvalidFields)
-      : validate(data, setInvalidFields)
+      : validate(data, setInvalidFields);
     if (invalids === 0) {
       if (isRegister) {
-        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
-        const response = await apiRegister(payload)
-        dispatch(showModal({ isShowModal: false, modalChildren: null }))
+        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+        const response = await apiRegister(payload);
+        dispatch(showModal({ isShowModal: false, modalChildren: null }));
         if (response.success) {
-          setIsVerifiedEmail(true)
-        } else Swal.fire("Oops!", response.mes, "error")
+          setIsVerifiedEmail(true);
+        } else Swal.fire("Oops!", response.mes, "error");
       } else {
-        const rs = await apiLogin(data)
+        const rs = await apiLogin(data);
+        console.log("Rs: ", rs);
         if (rs.success) {
           dispatch(
             login({
@@ -74,26 +76,34 @@ const Login = () => {
               token: rs.accessToken,
               userData: rs.userData,
             })
-          )
+          );
           searchParams.get("redirect")
             ? navigate(searchParams.get("redirect"))
-            : navigate(`/${path.HOME}`)
-        } else Swal.fire("Oops!", rs.mes, "error")
+            : navigate(`/${path.HOME}`);
+        } else Swal.fire("Oops!", rs.mes, "error");
       }
     }
-  }, [payload, isRegister])
+  }, [payload, isRegister, dispatch, navigate, searchParams]);
 
   const finalRegister = async () => {
-    const response = await apiFinalRegister(token)
+    const response = await apiFinalRegister(token);
     if (response.success) {
       Swal.fire("Congratulation", response.mes, "success").then(() => {
-        setIsRegister(false)
-        resetPayload()
-      })
-    } else Swal.fire("Oops!", response.mes, "error")
-    setIsVerifiedEmail(false)
-    setToken("")
-  }
+        setIsRegister(false);
+        resetPayload();
+      });
+    } else Swal.fire("Oops!", response.mes, "error");
+    setIsVerifiedEmail(false);
+    setToken("");
+  };
+
+  const handleLoginWithGoogle = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  };
+
+  const handleLoginWithFacebook = () => {
+    window.location.href = "http://localhost:5000/api/auth/facebook";
+  };
 
   return (
     <div className="w-screen h-screen relative">
@@ -208,6 +218,18 @@ const Login = () => {
           <Button handleOnClick={handleSubmit} fw>
             {isRegister ? "Register" : "Login"}
           </Button>
+          {!isRegister && (
+            <div className="flex justify-between w-full space-x-4">
+              <Button handleOnClick={handleLoginWithGoogle} fw>
+                <FaGoogle className="mr-2" />
+                Login with Google
+              </Button>
+              <Button handleOnClick={handleLoginWithFacebook} fw>
+                <FaFacebook className="mr-2" />
+                Login with Facebook
+              </Button>
+            </div>
+          )}
           <div className="flex items-center justify-between my-2 w-full text-sm">
             {!isRegister && (
               <span
@@ -243,7 +265,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

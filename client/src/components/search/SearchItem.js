@@ -4,6 +4,8 @@ import { colors } from 'ultils/contants'
 import { createSearchParams, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { apiGetProducts } from 'apis'
 import useDebounce from 'hooks/useDebounce'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const { AiOutlineDown } = icons
 
 const SearchItem = ({ name, activeClick, changeActiveFitler, type = 'checkbox' }) => {
@@ -16,6 +18,7 @@ const SearchItem = ({ name, activeClick, changeActiveFitler, type = 'checkbox' }
         to: ''
     })
     const [bestPrice, setBestPrice] = useState(null)
+    const [lastToastTime, setLastToastTime] = useState(0);
     const handleSelect = (e) => {
         const alreadyEl = selected.find(el => el === e.target.value)
         if (alreadyEl) setSelected(prev => prev.filter(el => el !== e.target.value))
@@ -44,9 +47,29 @@ const SearchItem = ({ name, activeClick, changeActiveFitler, type = 'checkbox' }
         if (type === 'input') fetchBestPriceProduct()
     }, [type])
 
+    // useEffect(() => {
+    //     if (price.from && price.to && price.from > price.to) alert('From price cannot greater than To price')
+    // }, [price])
+
     useEffect(() => {
-        if (price.from && price.to && price.from > price.to) alert('From price cannot greater than To price')
-    }, [price])
+        if (price.from && price.to && price.from > price.to) {
+            const now = new Date().getTime();
+            if (now - lastToastTime > 5000) {
+                toast.error('From price cannot be greater than To price');
+                setLastToastTime(now);
+            }
+        }
+    }, [price, lastToastTime]);
+
+    const handlePriceChange = (e, field) => {
+        const value = e.target.value;
+        if (value < 0) {
+            toast.error('Do not enter negative values');
+            setPrice(prev => ({ ...prev, [field]: '' }));
+        } else {
+            setPrice(prev => ({ ...prev, [field]: value }));
+        }
+    };
 
     const deboucePriceFrom = useDebounce(price.from, 500)
     const deboucePriceTo = useDebounce(price.to, 500)
@@ -117,7 +140,8 @@ const SearchItem = ({ name, activeClick, changeActiveFitler, type = 'checkbox' }
                                 type="number"
                                 id="from"
                                 value={price.from}
-                                onChange={e => setPrice(prev => ({ ...prev, from: e.target.value }))}
+                                //onChange={e => setPrice(prev => ({ ...prev, from: e.target.value }))}
+                                onChange={e => handlePriceChange(e, 'from')}
                             />
                         </div>
                         <div className='flex items-center gap-2'>
@@ -127,7 +151,8 @@ const SearchItem = ({ name, activeClick, changeActiveFitler, type = 'checkbox' }
                                 type="number"
                                 id="to"
                                 value={price.to}
-                                onChange={e => setPrice(prev => ({ ...prev, to: e.target.value }))}
+                                //onChange={e => setPrice(prev => ({ ...prev, to: e.target.value }))}
+                                onChange={e => handlePriceChange(e, 'to')}
                             />
                         </div>
                     </div>

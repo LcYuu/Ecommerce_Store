@@ -8,7 +8,7 @@ const createNewBlog = asyncHandler(async (req, res) => {
   const response = await Blog.create({ ...req.body, image: req.file.path })
   return res.json({
     success: response ? true : false,
-    mes: response ? "Created blog." : "Cannot create new blog",
+    mes: response ? "Created blog" : "Cannot create new blog",
   })
 })
 const updateBlog = asyncHandler(async (req, res) => {
@@ -16,7 +16,7 @@ const updateBlog = asyncHandler(async (req, res) => {
   const response = await Blog.findByIdAndUpdate(bid, req.body, { new: true })
   return res.json({
     success: response ? true : false,
-    mes: response ? "Updated." : "Cannot update blog",
+    mes: response ? "Updated" : "Cannot update blog",
   })
 })
 const getBlogs = asyncHandler(async (req, res) => {

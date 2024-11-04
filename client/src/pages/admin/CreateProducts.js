@@ -98,7 +98,11 @@ const CreateProducts = () => {
                             errors={errors}
                             id='price'
                             validate={{
-                                required: 'Need fill this field'
+                                required: 'Need fill this field',
+                                min: {
+                                    value: 0,
+                                    message: 'Price cannot be negative'
+                                }
                             }}
                             style='flex-auto'
                             placeholder='Price of new product'
@@ -110,7 +114,11 @@ const CreateProducts = () => {
                             errors={errors}
                             id='quantity'
                             validate={{
-                                required: 'Need fill this field'
+                                required: 'Need fill this field',
+                                min: {
+                                    value: 0,
+                                    message: 'Quantity cannot be negative'
+                                }
                             }}
                             style='flex-auto'
                             placeholder='Quantity of new product'

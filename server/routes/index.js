@@ -7,6 +7,7 @@ const brand = require('./brand')
 const coupon = require('./coupon')
 const order = require('./order')
 const insert = require('./insert')
+const authRouter = require('./auth')
 const { notFound, errHandler } = require('../middlewares/errHandler')
 
 const initRoutes = (app) => {
@@ -19,7 +20,7 @@ const initRoutes = (app) => {
     app.use('/api/coupon', coupon)
     app.use('/api/order', order)
     app.use('/api/insert', insert)
-
+    app.use('/api/auth', authRouter)
 
 
     app.use(notFound)

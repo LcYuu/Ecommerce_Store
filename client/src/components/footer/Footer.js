@@ -1,12 +1,12 @@
-import React, { memo } from "react"
-import icons from "ultils/icons"
+import React, { memo } from "react";
+import icons from "ultils/icons";
 
-const { MdEmail } = icons
+const { MdEmail } = icons;
 const Footer = () => {
   return (
     <div className="w-full ">
-      <div className="h-[103px] w-full bg-main flex items-center py-4 justify-center">
-        <div className="w-main flex items-center flex-col lg:flex-row justify-center lg:justify-between">
+      <div className="h-[103px] w-full bg-main flex items-center justify-center">
+        <div className="w-main flex items-center justify-between">
           <div className="flex flex-col flex-1">
             <span className="text-[20px] text-gray-100">
               SIGN UP TO NEWSLETTER
@@ -27,10 +27,10 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="lg:h-[407px] w-full bg-gray-900 flex items-center justify-center text-white text-[13px]">
-        <div className="lg:w-main flex lg:flex-grow-0 flex-col">
+      <div className="h-[407px] w-full bg-gray-900 flex items-center justify-center text-white text-[13px]">
+        <div className="w-main flex">
           <div className="flex-2 flex flex-col gap-2">
-            <h3 className="mb-[20px] mt-8 text-[15px] font-medium border-l-2 border-main pl-[15px]">
+            <h3 className="mb-[20px] text-[15px] font-medium border-l-2 border-main pl-[15px]">
               ABOUT US
             </h3>
             <span>
@@ -49,7 +49,7 @@ const Footer = () => {
             </span>
           </div>
           <div className="flex-1 flex flex-col gap-2">
-            <h3 className="mb-[20px] mt-8 text-[15px] font-medium border-l-2 border-main pl-[15px]">
+            <h3 className="mb-[20px] text-[15px] font-medium border-l-2 border-main pl-[15px]">
               INFORMATION
             </h3>
             <span>Typography</span>
@@ -59,7 +59,7 @@ const Footer = () => {
             <span>Contacts</span>
           </div>
           <div className="flex-1 flex flex-col gap-2">
-            <h3 className="mb-[20px] mt-8 text-[15px] font-medium border-l-2 border-main pl-[15px]">
+            <h3 className="mb-[20px] text-[15px] font-medium border-l-2 border-main pl-[15px]">
               WHO WE ARE
             </h3>
             <span>Help</span>
@@ -69,14 +69,14 @@ const Footer = () => {
             <span>Testimonials</span>
           </div>
           <div className="flex-1 flex flex-col gap-2">
-            <h3 className="mb-[20px] mt-8 text-[15px] font-medium border-l-2 border-main pl-[15px]">
+            <h3 className="mb-[20px] text-[15px] font-medium border-l-2 border-main pl-[15px]">
               #DIGITALWORLDSTORE
             </h3>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default memo(Footer)
+export default memo(Footer);
