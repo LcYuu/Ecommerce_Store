@@ -35,7 +35,7 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
   const params = useParams()
   const { current } = useSelector((state) => state.user)
   const [product, setProduct] = useState(null)
-  const [currentImage, setCurrentImage] = useState(null)
+  const [currentImage, setCurrentImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [relatedProducts, setRelatedProducts] = useState(null)
   const [update, setUpdate] = useState(false)
@@ -62,7 +62,7 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
     const response = await apiGetProduct(pid)
     if (response.success) {
       setProduct(response.productData)
-      setCurrentImage(response.productData?.thumb)
+      setCurrentImage(0)
     }
   }
   useEffect(() => {
@@ -93,7 +93,9 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
       fetchProductData()
       fetchProducts()
     }
-    titleRef.current.scrollIntoView({ block: "center" })
+    if (titleRef.current) {
+      titleRef.current.scrollIntoView({ block: "center" })
+    }
   }, [pid])
   useEffect(() => {
     if (pid) fetchProductData()
@@ -121,10 +123,10 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
     [quantity]
   )
 
-  const handleClickImage = (e, el) => {
-    e.stopPropagation()
-    setCurrentImage(el)
-  }
+  const handleClickImage = (e, el, index) => {
+    e.stopPropagation();
+    setCurrentImage(index);
+  };
   const handleAddToCart = async () => {
     if (!current)
       return Swal.fire({
@@ -177,12 +179,12 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
         className={clsx(
           "bg-white m-auto mt-4 flex",
           isQuickView
-            ? "max-w-[900px] gap-16 p-8 max-h-[80vh] overflow-y-auto"
+            ? "max-w-[1200px] gap-20 p-10 max-h-[90vh] overflow-y-auto"
             : "w-main"
         )}
       >
         <div
-          className={clsx("flex flex-col gap-4 w-2/5", isQuickView && "w-1/2")}
+          className={clsx("flex flex-col gap-4 w-2/5", isQuickView && "w-3/5")}
         >
           <div className="w-[458px] h-[458px] border flex items-center overflow-hidden">
             <ReactImageMagnify
@@ -190,10 +192,10 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
                 smallImage: {
                   alt: "",
                   isFluidWidth: true,
-                  src: currentProduct.thumb || currentImage,
+                  src: currentProduct.images[currentImage]
                 },
                 largeImage: {
-                  src: currentProduct.thumb || currentImage,
+                  // src: currentProduct.thumb || currentImage,
                   width: 1800,
                   height: 1500,
                 },
@@ -206,10 +208,10 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
               {...settings}
             >
               {currentProduct.images?.length === 0 &&
-                product?.images?.map((el) => (
+                product?.images?.map((el, index) => (
                   <div className="flex-1" key={el}>
                     <img
-                      onClick={(e) => handleClickImage(e, el)}
+                      onClick={(e) => handleClickImage(e, el, index)}
                       src={el}
                       alt="sub-product"
                       className="w-[143px] cursor-pointer h-[143px] border object-cover"
@@ -217,10 +219,10 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
                   </div>
                 ))}
               {currentProduct.images?.length > 0 &&
-                currentProduct.images?.map((el) => (
+                currentProduct.images?.map((el, index) => (
                   <div className="flex-1" key={el}>
                     <img
-                      onClick={(e) => handleClickImage(e, el)}
+                      onClick={(e) => handleClickImage(e, el, index)}
                       src={el}
                       alt="sub-product"
                       className="w-[143px] cursor-pointer h-[143px] border object-cover"
@@ -233,7 +235,7 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
         <div
           className={clsx(
             "w-2/5 pr-[24px] flex flex-col gap-4",
-            isQuickView && "w-1/2"
+            isQuickView && "w-3/5"
           )}
         >
           <div className="flex items-center justify-between">

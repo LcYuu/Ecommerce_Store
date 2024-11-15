@@ -9,10 +9,27 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
     const [chosenScore, setChosenScore] = useState(null)
     const [comment, setComment] = useState('')
     const [score, setScore] = useState(null)
+    const [images, setImages] = useState(null)
 
     useEffect(() => {
         modalRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
     }, [])
+
+    const handleImageChange = (e) => {
+        setImages(e.target.files[0]);
+    };
+
+    const handleSubmit = () => {
+        if (images === null) {
+            alert('aaa');
+        }
+        const formData = new FormData();
+        formData.append('comment', comment);
+        formData.append('score', score);
+        formData.append('images', images);
+        handleSubmitVoteOption(formData);
+    };
+
     return (
         <div onClick={e => e.stopPropagation()} ref={modalRef} className='bg-white w-[700px] p-4 flex-col gap-4 flex items-center justify-center'>
             <img src={logo} alt="logo" className='w-[300px] my-8 object-contain' />
@@ -23,6 +40,8 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
                 value={comment}
                 onChange={e => setComment(e.target.value)}
             ></textarea>
+            <input type="file" accept="image/*" onChange={handleImageChange} />
+            {images && <img src={images} alt="Uploaded" className='w-[300px] my-8 object-contain' />}
             <div className='w-full flex flex-col gap-4'>
                 <p>How do you like this product?</p>
                 <div className='flex justify-center gap-4 items-center'>
@@ -40,8 +59,9 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
                     ))}
                 </div>
             </div>
+
             <Button
-                handleOnClick={() => handleSubmitVoteOption({ comment, score })}
+                handleOnClick={handleSubmit}
                 fw
             >
                 Submit

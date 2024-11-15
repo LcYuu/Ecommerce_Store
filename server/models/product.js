@@ -52,6 +52,7 @@ var productSchema = new mongoose.Schema({
         {
             star: { type: Number },
             postedBy: { type: mongoose.Types.ObjectId, ref: 'User' },
+            images: {type: String},
             comment: { type: String },
             updatedAt: { type: Date }
         }

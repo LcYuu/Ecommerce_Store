@@ -16,15 +16,26 @@ const ProductInfomation = ({ totalRatings, ratings, nameProduct, pid, rerender }
     const navigate = useNavigate()
     const { isLoggedIn } = useSelector(state => state.user)
 
-    const handleSubmitVoteOption = async ({ comment, score }) => {
-        if (!comment || !pid || !score) {
-            alert('Please vote when click submit')
-            return
+    const handleSubmitVoteOption = async (formData) => {
+        if (!formData.get('comment') || !pid || !formData.get('score')) {
+            alert('Please vote when click submit');
+            return;
         }
-        await apiRatings({ star: score, comment, pid, updatedAt: Date.now() })
-        dispatch(showModal({ isShowModal: false, modalChildren: null }))
-        rerender()
-    }
+        
+        // Kiểm tra formData
+        console.log('formData:', formData);
+    
+        await apiRatings({
+            star: formData.get('score'),
+            comment: formData.get('comment'),
+            images: formData.get('images'), 
+            pid,
+            updatedAt: Date.now(),
+        });
+    
+        dispatch(showModal({ isShowModal: false, modalChildren: null }));
+        rerender();
+    };
     const handleVoteNow = () => {
         if (!isLoggedIn) {
             Swal.fire({
@@ -96,6 +107,7 @@ const ProductInfomation = ({ totalRatings, ratings, nameProduct, pid, rerender }
                             star={el.star}
                             updatedAt={el.updatedAt}
                             comment={el.comment}
+                            imageRating={el.image}
                             name={`${el.postedBy?.lastname} ${el.postedBy?.firstname}`}
                         />
                     ))}

@@ -3,7 +3,7 @@ import avatar from 'assets/avatarDefault.png'
 import moment from 'moment'
 import { renderStarFromNumber } from 'ultils/helpers'
 
-const Comment = ({ image = avatar, name = 'Anonymous', updatedAt, comment, star }) => {
+const Comment = ({ image = avatar, name = 'Anonymous', updatedAt, comment, imageRating, star }) => {
     return (
         <div className='flex gap-4'>
             <div className='flex-none'>
@@ -20,6 +20,9 @@ const Comment = ({ image = avatar, name = 'Anonymous', updatedAt, comment, star 
                         <span className='flex items-center gap-1'>{renderStarFromNumber(star)?.map((el, index) => (
                             <span key={index}>{el}</span>
                         ))}</span>
+                    </span>
+                    <span>
+                        <img src={imageRating}/>
                     </span>
                     <span className=' flex gap-1'>
                         <span className='font-semibold'>Comment:</span>

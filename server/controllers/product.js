@@ -131,14 +131,18 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const ratings = asyncHandler(async (req, res) => {
   const { _id } = req.user
   const { star, comment, pid, updatedAt } = req.body
+
+  console.log("req.files:", req.images);
+  // const images = req?.files?.image[0]?.path
+  const images = req.files?.images?.map((el) => el.path)
+  console.log(images);
   if (!star || !pid) throw new Error("Missing inputs")
   const ratingProduct = await Product.findById(pid)
   const alreadyRating = ratingProduct?.ratings?.find(
     (el) => el.postedBy.toString() === _id
   )
-  // console.log(alreadyRating);
   if (alreadyRating) {
-    // update star & comment
+    // update star, comment & image
     await Product.updateOne(
       {
         ratings: { $elemMatch: alreadyRating },
@@ -148,16 +152,17 @@ const ratings = asyncHandler(async (req, res) => {
           "ratings.$.star": star,
           "ratings.$.comment": comment,
           "ratings.$.updatedAt": updatedAt,
+          "ratings.$.images": images,
         },
       },
       { new: true }
     )
   } else {
-    // add star & comment
+    // add star, comment & image
     await Product.findByIdAndUpdate(
       pid,
       {
-        $push: { ratings: { star, comment, postedBy: _id, updatedAt } },
+        $push: { ratings: { star, comment, postedBy: _id, updatedAt, images } },
       },
       { new: true }
     )
@@ -192,6 +197,20 @@ const uploadImagesProduct = asyncHandler(async (req, res) => {
     updatedProduct: response ? response : "Cannot upload images product",
   })
 })
+
+// const uploadImageRating = asyncHandler(async (req, res) => {
+//   const { pid } = req.params
+//   if (!req.files) throw new Error("Missing inputs")
+//   const response = await Product.findByIdAndUpdate(
+//     pid,
+//     { $push: { image: { $each: req.files.map((el) => el.path) } } },
+//     { new: true }
+//   )
+//   return res.status(200).json({
+//     success: response ? true : false,
+//     updatedProduct: response ? response : "Cannot upload image rating",
+//   })
+// })
 const addVarriant = asyncHandler(async (req, res) => {
   const { pid } = req.params
   const { title, price, color } = req.body
