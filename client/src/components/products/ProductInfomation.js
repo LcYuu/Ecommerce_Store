@@ -104,7 +104,7 @@ const ProductInfomation = ({ totalRatings, ratings, nameProduct, pid, rerender }
                             star={el.star}
                             updatedAt={el.updatedAt}
                             comment={el.comment}
-                            imageRating={el.image}
+                            imageRating={el.images}
                             name={`${el.postedBy?.lastname} ${el.postedBy?.firstname}`}
                         />
                     ))}

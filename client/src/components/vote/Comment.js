@@ -22,7 +22,7 @@ const Comment = ({ image = avatar, name = 'Anonymous', updatedAt, comment, image
                         ))}</span>
                     </span>
                     <span>
-                        <img src={imageRating}/>
+                        <img src={imageRating} width="300" height="400" />
                     </span>
                     <span className=' flex gap-1'>
                         <span className='font-semibold'>Comment:</span>

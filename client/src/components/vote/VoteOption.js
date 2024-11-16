@@ -48,22 +48,6 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
     useEffect(() => {
         modalRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
     }, [])
-
-    const handleImageChange = (e) => {
-        setImages(e.target.files[0]);
-    };
-
-    const handleSubmit = () => {
-        if (images === null) {
-            alert('aaa');
-        }
-        const formData = new FormData();
-        formData.append('comment', comment);
-        formData.append('score', score);
-        formData.append('images', images);
-        handleSubmitVoteOption(formData);
-    };
-
     return (
         <div onClick={e => e.stopPropagation()} ref={modalRef} className='bg-white w-[700px] p-4 flex-col gap-4 flex items-center justify-center'>
             <img src={logo} alt="logo" className='w-[300px] my-8 object-contain' />
@@ -75,11 +59,10 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
                 onChange={e => setComment(e.target.value)}
             ></textarea>
             <div className='flex flex-col gap-2 mt-8'>
-                <label className='font-semibold' htmlFor="products">Upload images of product</label>
+                <label className='font-semibold' htmlFor="products">Upload images of product (1 image)</label>
                 <input
                     type="file"
                     id="products"
-                    multiple
                     {...register('images', { required: 'Need fill' })}
                 />
             </div>
