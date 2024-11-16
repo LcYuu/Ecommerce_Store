@@ -1,17 +1,45 @@
 const Order = require("../models/order")
 const User = require("../models/user")
 const Coupon = require("../models/coupon")
+const Product = require("../models/product")
 const asyncHandler = require("express-async-handler")
 
 const createOrder = asyncHandler(async (req, res) => {
   const { _id } = req.user
   const { products, total, address, status } = req.body
+
+  const productsData = await Product.find({
+    _id: { $in: products.map((el) => el.product._id) },
+  })
+
+  const checkQuantity = productsData.every((el) => {
+    const product = products.find((p) => p.product._id === el._id.toString())
+    return el.quantity >= product.quantity
+  })
+
+  if (!checkQuantity) throw new Error("Product quantity is not enough")
+
   if (address) {
     await User.findByIdAndUpdate(_id, { address, cart: [] })
   }
   const data = { products, total, orderBy: _id }
   if (status) data.status = status
   const rs = await Order.create(data)
+  if (rs) {
+    await Product.updateMany(
+      { _id: { $in: products.map((el) => el.product._id) } },
+      {
+        $inc: {
+          quantity: -1 * products.reduce((acc, el) => {
+            return acc + el.quantity;
+          }, 0),
+          sold: products.reduce((acc, el) => {
+            return acc + el.quantity;
+          }, 0),
+        },
+      }
+    )
+  }
   return res.json({
     success: rs ? true : false,
     rs: rs ? rs : "Something went wrong",

@@ -32,6 +32,7 @@ const Products = () => {
   const { category } = useParams()
 
   const fetchProductsByCategory = async (queries) => {
+    queries.limit = +process.env.REACT_APP_LIMIT || 10
     if (category && category !== "products") queries.category = category
     const response = await apiGetProducts(queries)
     if (response.success) setProducts(response)

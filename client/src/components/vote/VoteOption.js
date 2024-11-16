@@ -3,13 +3,47 @@ import logo from 'assets/logo.png'
 import { voteOptions } from 'ultils/contants'
 import { AiFillStar } from 'react-icons/ai'
 import { Button } from 'components'
+import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import { getBase64 } from 'ultils/helpers'
 
 const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
     const modalRef = useRef()
     const [chosenScore, setChosenScore] = useState(null)
     const [comment, setComment] = useState('')
     const [score, setScore] = useState(null)
-    const [images, setImages] = useState(null)
+    const [preview, setPreview] = useState({
+        images: []
+    })
+    const [images, setImages] = useState([])
+    const { register, formState: { errors }, reset, handleSubmit, watch } = useForm()
+
+    const handlePreviewImages = async (files) => {
+        const imagesPreview = []
+        for (let file of files) {
+            if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+                toast.warning('File not supported!')
+                return
+            }
+            const base64 = await getBase64(file)
+            imagesPreview.push({ name: file.name, path: base64 })
+        }
+        setPreview(prev => ({ ...prev, images: imagesPreview }))
+    }
+
+    const handleFileChange = (e) => {
+        const files = e.target.files
+        setImages(files)
+        handlePreviewImages(files)
+    }
+
+    useEffect(() => {
+        handlePreviewImages(watch('images'))
+    }, [watch('images')])
+
+    useEffect(() => {
+        register('images', { onChange: handleFileChange })
+    }, [])
 
     useEffect(() => {
         modalRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
@@ -40,8 +74,15 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
                 value={comment}
                 onChange={e => setComment(e.target.value)}
             ></textarea>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
-            {images && <img src={images} alt="Uploaded" className='w-[300px] my-8 object-contain' />}
+            <div className='flex flex-col gap-2 mt-8'>
+                <label className='font-semibold' htmlFor="products">Upload images of product</label>
+                <input
+                    type="file"
+                    id="products"
+                    multiple
+                    {...register('images', { required: 'Need fill' })}
+                />
+            </div>
             <div className='w-full flex flex-col gap-4'>
                 <p>How do you like this product?</p>
                 <div className='flex justify-center gap-4 items-center'>
@@ -59,9 +100,18 @@ const VoteOption = ({ nameProduct, handleSubmitVoteOption }) => {
                     ))}
                 </div>
             </div>
-
+            {preview.images.length > 0 && <div className='my-4 flex w-full gap-3 flex-wrap'>
+                {preview.images?.map((el, idx) => (
+                    <div
+                        key={idx}
+                        className='w-fit relative'
+                    >
+                        <img src={el.path} alt="product" className='w-[200px] object-contain' />
+                    </div>
+                ))}
+            </div>}
             <Button
-                handleOnClick={handleSubmit}
+                handleOnClick={() => handleSubmitVoteOption({ comment, score, images })}
                 fw
             >
                 Submit

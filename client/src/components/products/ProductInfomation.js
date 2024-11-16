@@ -16,26 +16,23 @@ const ProductInfomation = ({ totalRatings, ratings, nameProduct, pid, rerender }
     const navigate = useNavigate()
     const { isLoggedIn } = useSelector(state => state.user)
 
-    const handleSubmitVoteOption = async (formData) => {
-        if (!formData.get('comment') || !pid || !formData.get('score')) {
-            alert('Please vote when click submit');
-            return;
+    const handleSubmitVoteOption = async ({ comment, score, images }) => {
+        if (!comment || !pid || !score) {
+            alert('Please vote when click submit')
+            return
         }
-        
-        // Kiểm tra formData
-        console.log('formData:', formData);
-    
-        await apiRatings({
-            star: formData.get('score'),
-            comment: formData.get('comment'),
-            images: formData.get('images'), 
-            pid,
-            updatedAt: Date.now(),
-        });
-    
-        dispatch(showModal({ isShowModal: false, modalChildren: null }));
-        rerender();
-    };
+        const formData = new FormData()
+        formData.append('star', score)
+        formData.append('comment', comment)
+        formData.append('pid', pid)
+        formData.append('updatedAt', Date.now())
+        if (images) {
+            for (let image of images) formData.append('images', image)
+        }
+        await apiRatings(formData)
+        dispatch(showModal({ isShowModal: false, modalChildren: null }))
+        rerender()
+    }
     const handleVoteNow = () => {
         if (!isLoggedIn) {
             Swal.fire({

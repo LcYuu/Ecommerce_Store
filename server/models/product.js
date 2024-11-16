@@ -54,6 +54,7 @@ var productSchema = new mongoose.Schema({
             postedBy: { type: mongoose.Types.ObjectId, ref: 'User' },
             images: {type: String},
             comment: { type: String },
+            images: { type: Array },
             updatedAt: { type: Date }
         }
     ],
