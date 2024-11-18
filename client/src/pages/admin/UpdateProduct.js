@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { apiUpdateProduct } from 'apis'
 import { showModal } from 'store/app/appSlice'
 import { useSelector, useDispatch } from 'react-redux'
+import { Toast } from 'configs/toast'
 
 const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
     const { categories } = useSelector(state => state.app)
@@ -78,10 +79,10 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
             const response = await apiUpdateProduct(formData, editProduct._id)
             dispatch(showModal({ isShowModal: false, modalChildren: null }))
             if (response.success) {
-                toast.success(response.mes)
+                Toast.success(response.mes)
                 render()
                 setEditProduct(null)
-            } else toast.error(response.mes)
+            } else Toast.error(response.mes)
         }
     }
     return (

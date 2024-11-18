@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import avatar from 'assets/avatarDefault.png'
 import { apiUpdateCurrent } from 'apis'
 import { getCurrent } from 'store/user/asyncActions'
-import { toast } from 'react-toastify'
+import { Toast } from 'configs/toast'
 import { getBase64 } from 'ultils/helpers'
 import { useSearchParams } from 'react-router-dom'
 import withBaseComponent from 'hocs/withBaseComponent'
@@ -35,9 +35,9 @@ const Personal = ({ navigate }) => {
         const response = await apiUpdateCurrent(formData)
         if (response.success) {
             dispatch(getCurrent())
-            toast.success(response.mes)
+            Toast.success(response.mes)
             if (searchParams.get('redirect')) navigate(searchParams.get('redirect'))
-        } else toast.error(response.mes)
+        } else Toast.error(response.mes)
     }
     return (
         <div className='w-full relative px-4'>

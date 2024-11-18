@@ -3,7 +3,7 @@ import { Button, InputFile, InputForm, MdEditor } from "components"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
-import { toast } from "react-toastify"
+import { Toast } from "configs/toast"
 import { showModal } from "store/app/appSlice"
 
 const UpdateBlog = ({ title, description, image: imageLink, hashtags, id }) => {
@@ -37,8 +37,8 @@ const UpdateBlog = ({ title, description, image: imageLink, hashtags, id }) => {
     setIsLoading(false)
     if (response.success) {
       dispatch(showModal({ isShowModal: false, modalChildren: null }))
-      toast.success(response.mes)
-    } else toast.error(response.mes)
+      Toast.success(response.mes)
+    } else Toast.error(response.mes)
   }
   return (
     <div

@@ -10,9 +10,9 @@ import { RiDeleteBin6Line } from "react-icons/ri"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { showModal } from "store/app/appSlice"
 import UpdateBlog from "./UpdateBlog"
-import { toast } from "react-toastify"
 import { useSelector } from "react-redux"
 import Swal from "sweetalert2"
+import { Toast } from 'configs/toast'
 
 const ManageBlog = ({ dispatch }) => {
   const [params] = useSearchParams()
@@ -56,8 +56,8 @@ const ManageBlog = ({ dispatch }) => {
         const response = await apiDeleteBlog(id)
         if (response.success) {
           setUpdate(!update)
-          toast.success(response.mes)
-        } else toast.error(response.mes)
+          Toast.success(response.mes)
+        } else Toast.error(response.mes)
       }
     })
   }

@@ -18,9 +18,10 @@ import clsx from "clsx"
 import { useSelector } from "react-redux"
 import withBaseComponent from "hocs/withBaseComponent"
 import { getCurrent } from "store/user/asyncActions"
-import { toast } from "react-toastify"
+
 import path from "ultils/path"
 import Swal from "sweetalert2"
+import { Toast } from 'configs/toast'
 
 const settings = {
   dots: false,
@@ -150,11 +151,12 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
       price: currentProduct.price || product.price,
       thumbnail: currentProduct.thumb || product.thumb,
       title: currentProduct.title || product.title,
+      isUpdatingQuantity: false
     })
     if (response.success) {
-      toast.success(response.mes)
+      Toast.success(response.mes)
       dispatch(getCurrent())
-    } else toast.error(response.mes)
+    } else Toast.error(response.mes)
   }
 
   return (
@@ -311,12 +313,17 @@ const DetailProduct = ({ isQuickView, data, location, dispatch, navigate }) => {
               <span className="font-semibold">Quantity</span>
               <SelectQuantity
                 quantity={quantity}
+                inStock={product?.quantity || 0}
                 handleQuantity={handleQuantity}
                 handleChangeQuantity={handleChangeQuantity}
               />
             </div>
-            <Button handleOnClick={handleAddToCart} fw>
-              Add to Cart
+            <Button 
+              handleOnClick={handleAddToCart} 
+              fw
+              disabled={!product?.quantity}
+            >
+              {product?.quantity ? 'Add to Cart' : 'Out of Stock'}
             </Button>
           </div>
         </div>

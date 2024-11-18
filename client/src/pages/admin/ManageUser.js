@@ -6,7 +6,7 @@ import { InputField, Pagination, InputForm, Select, Button } from 'components'
 import useDebounce from 'hooks/useDebounce'
 import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
+import { Toast } from 'configs/toast'
 import Swal from 'sweetalert2'
 import clsx from 'clsx'
 
@@ -46,8 +46,8 @@ const ManageUser = () => {
         if (response.success) {
             setEditElm(null)
             render()
-            toast.success(response.mes)
-        } else toast.error(response.mes)
+            Toast.success(response.mes)
+        } else Toast.error(response.mes)
     }
     const handleDeleteUser = (uid) => {
         Swal.fire({
@@ -59,8 +59,8 @@ const ManageUser = () => {
                 const response = await apiDeleteUser(uid)
                 if (response.success) {
                     render()
-                    toast.success(response.mes)
-                } else toast.error(response.mes)
+                    Toast.success(response.mes)
+                } else Toast.error(response.mes)
             }
         })
     }
