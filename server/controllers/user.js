@@ -412,7 +412,7 @@ const updateCart = asyncHandler(async (req, res) => {
       if (newQuantity + totalQuantityOtherColors > product.quantity) {
         return res.status(400).json({
           success: false,
-          mes: "Total quantity exceeds available stock"
+          mes: "Tổng số lượng vượt quá số lượng có sẵn"
         });
       }
 
@@ -438,7 +438,7 @@ const updateCart = asyncHandler(async (req, res) => {
     if (quantity + totalQuantityOtherColors > product.quantity) {
       return res.status(400).json({
         success: false,
-        mes: "Total quantity exceeds available stock"
+        mes: "Tổng số lượng vượt quá số lượng có sẵn"
       });
     }
 
