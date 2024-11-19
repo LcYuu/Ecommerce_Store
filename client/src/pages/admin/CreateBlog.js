@@ -2,7 +2,7 @@ import { apiCreateNewBlog } from "apis/blog"
 import { Button, InputFile, InputForm, MdEditor } from "components"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "react-toastify"
+import { Toast } from "configs/toast"
 
 const CreateBlog = () => {
   const {
@@ -25,8 +25,8 @@ const CreateBlog = () => {
       setValue("description", "")
       setValue("hashtags", "")
       setValue("image", "")
-      toast.success(response.mes)
-    } else toast.error(response.mes)
+      Toast.success(response.mes)
+    } else Toast.error(response.mes)
   }
   return (
     <div className="w-full flex flex-col gap-4 bg-gray-50 relative">

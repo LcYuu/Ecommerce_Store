@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { Button } from "../../components";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiResetPassword } from "../../apis/user";
 import { toast } from "react-toastify";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -30,6 +32,7 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     if (!validatePassword(password)) return;
+
 
     if (password !== confirmPassword) {
       toast.error("Mật khẩu không trùng khớp!", { theme: "colored" });
