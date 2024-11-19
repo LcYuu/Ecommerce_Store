@@ -15,6 +15,8 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { validate } from "ultils/helpers";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ const Login = () => {
   const [invalidFields, setInvalidFields] = useState([]);
   const [isRegister, setIsRegister] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [searchParams] = useSearchParams();
   const resetPayload = () => {
     setPayload({
@@ -68,7 +71,6 @@ const Login = () => {
         } else Swal.fire("Oops!", response.mes, "error");
       } else {
         const rs = await apiLogin(data);
-        console.log("Rs: ", rs);
         if (rs.success) {
           dispatch(
             login({
@@ -83,7 +85,8 @@ const Login = () => {
         } else Swal.fire("Oops!", rs.mes, "error");
       }
     }
-  }, [payload, isRegister, dispatch, navigate, searchParams]);
+  }, [payload, isRegister]);
+
 
   const finalRegister = async () => {
     const response = await apiFinalRegister(token);
@@ -96,7 +99,6 @@ const Login = () => {
     setIsVerifiedEmail(false);
     setToken("");
   };
-
   const handleLoginWithGoogle = () => {
     window.location.href = "http://localhost:5000/api/auth/google";
   };
@@ -104,6 +106,7 @@ const Login = () => {
   const handleLoginWithFacebook = () => {
     window.location.href = "http://localhost:5000/api/auth/facebook";
   };
+
 
   return (
     <div className="w-screen h-screen relative">
@@ -206,15 +209,23 @@ const Login = () => {
               fullWidth
             />
           )}
-          <InputField
-            value={payload.password}
-            setValue={setPayload}
-            nameKey="password"
-            type="password"
-            invalidFields={invalidFields}
-            setInvalidFieds={setInvalidFields}
-            fullWidth
-          />
+          <div className="relative w-full">
+            <InputField
+              value={payload.password}
+              setValue={setPayload}
+              nameKey="password"
+              type={showPassword ? "text" : "password"}
+              invalidFields={invalidFields}
+              setInvalidFieds={setInvalidFields}
+              fullWidth
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-4 flex items-center cursor-pointer text-gray-500"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </span>
+          </div>
           <Button handleOnClick={handleSubmit} fw>
             {isRegister ? "Register" : "Login"}
           </Button>

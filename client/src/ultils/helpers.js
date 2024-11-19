@@ -43,25 +43,39 @@ export const validate = (payload, setInvalidFields) => {
       ])
     }
   }
-  // for (let arr of formatPayload) {
-  //     switch (arr[0]) {
-  //         case 'email':
-  //             const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-  //             if (!arr[1].match(regex)) {
-  //                 invalids++
-  //                 setInvalidFields(prev => [...prev, { name: arr[0], mes: 'Email invalid.' }])
-  //             }
-  //             break;
-  //         case 'password':
-  //             if (arr[1].length < 6) {
-  //                 invalids++
-  //                 setInvalidFields(prev => [...prev, { name: arr[0], mes: 'Password minimum 6 characters.' }])
-  //             }
-  //             break;
-  //         default:
-  //             break;
-  //     }
-  // }
+  for (let arr of formatPayload) {
+    switch (arr[0]) {
+      case "email":
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!arr[1].match(emailRegex)) {
+          invalids++;
+          setInvalidFields((prev) => [
+            ...prev,
+            { name: arr[0], mes: "Email không hợp lệ." },
+          ]);
+        }
+        break;
+      case "password":
+        const password = arr[1];
+        const passwordRegex =
+          /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!password.match(passwordRegex)) {
+          invalids++;
+          setInvalidFields((prev) => [
+            ...prev,
+            {
+              name: arr[0],
+              mes: "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+            },
+          ]);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
 
   return invalids
 }

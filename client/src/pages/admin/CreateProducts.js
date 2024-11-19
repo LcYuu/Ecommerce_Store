@@ -6,7 +6,7 @@ import { validate, getBase64 } from 'ultils/helpers'
 import { toast } from 'react-toastify'
 import { apiCreateProduct } from 'apis'
 import { showModal } from 'store/app/appSlice'
-
+import { Toast } from 'configs/toast'
 
 const CreateProducts = () => {
     const { categories } = useSelector(state => state.app)
@@ -64,13 +64,13 @@ const CreateProducts = () => {
             const response = await apiCreateProduct(formData)
             dispatch(showModal({ isShowModal: false, modalChildren: null }))
             if (response.success) {
-                toast.success(response.mes)
+                Toast.success(response.mes)
                 reset()
                 setPayload({
                     thumb: '',
                     image: []
                 })
-            } else toast.error(response.mes)
+            } else Toast.error(response.mes)
         }
     }
     return (

@@ -30,11 +30,21 @@ export const userSlice = createSlice({
         updateCart: (state, action) => {
             const { pid, color, quantity } = action.payload
             const updatingCart = JSON.parse(JSON.stringify(state.currentCart))
-            state.currentCart = updatingCart.map(el => {
-                if (el.color === color && el.product?._id === pid) {
-                    return { ...el, quantity }
-                } else return el
-            })
+            const existingProductIndex = updatingCart.findIndex(
+                el => el.color === color && el.product?._id === pid
+            )
+            
+            if (existingProductIndex !== -1) {
+                updatingCart[existingProductIndex].quantity += quantity
+            } else {
+                updatingCart.push({
+                    product: { _id: pid },
+                    color,
+                    quantity,
+                })
+            }
+            
+            state.currentCart = updatingCart
         }
     },
     extraReducers: (builder) => {

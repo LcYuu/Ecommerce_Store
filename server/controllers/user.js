@@ -10,6 +10,7 @@ const crypto = require("crypto")
 const makeToken = require("uniqid")
 const { users } = require("../ultils/constant")
 const user = require("../models/user")
+const Product = require("../models/product")
 
 // const register = asyncHandler(async (req, res) => {
 //     const { email, password, firstname, lastname } = req.body
@@ -36,37 +37,55 @@ const register = asyncHandler(async (req, res) => {
       success: false,
       mes: "Missing inputs",
     })
-  const user = await User.findOne({ email })
-  if (user) throw new Error("User has existed")
-  else {
-    const token = makeToken()
-    const emailedited = btoa(email) + "@" + token
-    const newUser = await User.create({
-      email: emailedited,
-      password,
-      firstname,
-      lastname,
-      mobile,
-    })
-    if (newUser) {
-      const html = `<h2>Register code:</h2><br /><blockquote>${token}</blockquote>`
-      await sendMail({
-        email,
-        html,
-        subject: "Confirm register account in Digital World",
-      })
-    }
-    setTimeout(async () => {
-      await User.deleteOne({ email: emailedited })
-    }, [300000])
 
-    return res.json({
-      success: newUser ? true : false,
-      mes: newUser
-        ? "Please check your email to active account"
-        : "Some went wrong, please try later",
+  // Kiểm tra email và mobile đã tồn tại chưa
+  const user = await User.findOne({ 
+    $or: [
+      { email: email },
+      { mobile: mobile }
+    ]
+  })
+  
+  if (user) {
+    // Nếu là user chưa verify, xóa đi để đăng ký lại
+    if (user.email.includes('@')) {
+      await User.deleteOne({ _id: user._id })
+    } else {
+      throw new Error("Email or mobile already exists")
+    }
+  }
+
+  const token = makeToken()
+  const emailedited = btoa(email) + "@" + token
+  
+  const newUser = await User.create({
+    email: emailedited,
+    password,
+    firstname,
+    lastname,
+    mobile,
+  })
+
+  if (newUser) {
+    const html = `<h2>Register code:</h2><br /><blockquote>${token}</blockquote>`
+    await sendMail({
+      email,
+      html,
+      subject: "Confirm register account in Digital World",
     })
   }
+
+  // Set timeout dài hơn để đảm bảo xóa được user
+  setTimeout(async () => {
+    await User.deleteOne({ email: emailedited })
+  }, 600000) // 10 phút
+
+  return res.json({
+    success: newUser ? true : false,
+    mes: newUser
+      ? "Please check your email to active account"
+      : "Something went wrong, please try later",
+  })
 })
 const finalRegister = asyncHandler(async (req, res) => {
   // const cookie = req.cookies
@@ -126,11 +145,8 @@ const getCurrent = asyncHandler(async (req, res) => {
   const user = await User.findById(_id)
     .select("-refreshToken -password")
     .populate({
-      path: "cart",
-      populate: {
-        path: "product",
-        select: "title thumb price",
-      },
+      path: "cart.product",
+      select: "title thumb price quantity"
     })
     .populate("wishlist", "title thumb price color")
   return res.status(200).json({
@@ -193,7 +209,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const resetToken = user.createPasswordChangedToken()
   await user.save()
 
-  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.CLIENT_URL}/reset-password/${resetToken}>Click here</a>`
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hn sau 15 phút kể từ bây giờ. <a href=${process.env.CLIENT_URL}/reset-password/${resetToken}>Click here</a>`
 
   const data = {
     email,
@@ -335,31 +351,97 @@ const updateUserAddress = asyncHandler(async (req, res) => {
   })
 })
 const updateCart = asyncHandler(async (req, res) => {
-  const { _id } = req.user
-  const { pid, quantity = 1, color, price, thumbnail, title } = req.body
-  if (!pid || !color) throw new Error("Missing inputs")
-  const user = await User.findById(_id).select("cart")
+  const { _id } = req.user;
+  const { pid, quantity = 1, color, price, thumbnail, title, isUpdatingQuantity = false } = req.body;
+
+  if (!pid || !color) {
+    throw new Error("Missing inputs");
+  }
+
+  const user = await User.findById(_id).select("cart");
+  const product = await Product.findById(pid);
+
+  if (!product) {
+    return res.status(400).json({
+      success: false,
+      mes: "Product not found"
+    });
+  }
+
   const alreadyProduct = user?.cart?.find(
     (el) => el.product.toString() === pid && el.color === color
-  )
+  );
+
+  // Kiểm tra số lượng trong giỏ hàng của các sản phẩm cùng pid khác color
+  const totalQuantityOtherColors = user?.cart?.reduce((total, item) => {
+    if (item.product.toString() === pid && item.color !== color) {
+      return total + item.quantity;
+    }
+    return total;
+  }, 0);
+
   if (alreadyProduct) {
-    const response = await User.updateOne(
-      { cart: { $elemMatch: alreadyProduct } },
-      {
-        $set: {
-          "cart.$.quantity": quantity,
-          "cart.$.price": price,
-          "cart.$.thumbnail": thumbnail,
-          "cart.$.title": title,
+    // Nếu đang cập nhật số lượng trực tiếp
+    if (isUpdatingQuantity) {
+      if (quantity + totalQuantityOtherColors > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          mes: "Tổng số lượng vượt quá số lượng có sẵn"
+        });
+      }
+
+      const response = await User.updateOne(
+        { _id, "cart.product": pid, "cart.color": color },
+        {
+          $set: {
+            "cart.$.quantity": quantity,
+            "cart.$.price": price,
+            "cart.$.thumbnail": thumbnail,
+            "cart.$.title": title,
+          },
         },
-      },
-      { new: true }
-    )
-    return res.status(200).json({
-      success: response ? true : false,
-      mes: response ? "Updated your cart" : "Some thing went wrong",
-    })
+        { new: true }
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        mes: response ? "Updated cart quantity" : "Something went wrong",
+      });
+    } else {
+      // Nếu đang thêm số lượng vào sản phẩm đã có
+      const newQuantity = alreadyProduct.quantity + quantity;
+      if (newQuantity + totalQuantityOtherColors > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          mes: "Total quantity exceeds available stock"
+        });
+      }
+
+      const response = await User.updateOne(
+        { _id, "cart.product": pid, "cart.color": color },
+        {
+          $set: {
+            "cart.$.quantity": newQuantity,
+            "cart.$.price": price,
+            "cart.$.thumbnail": thumbnail,
+            "cart.$.title": title,
+          },
+        },
+        { new: true }
+      );
+      return res.status(200).json({
+        success: response ? true : false,
+        mes: response ? "Updated your cart" : "Something went wrong",
+      });
+    }
   } else {
+    // Nếu thêm mới sản phẩm vào giỏ hàng
+    if (quantity + totalQuantityOtherColors > product.quantity) {
+      return res.status(400).json({
+        success: false,
+        mes: "Total quantity exceeds available stock"
+      });
+    }
+
     const response = await User.findByIdAndUpdate(
       _id,
       {
@@ -368,13 +450,14 @@ const updateCart = asyncHandler(async (req, res) => {
         },
       },
       { new: true }
-    )
+    );
+
     return res.status(200).json({
       success: response ? true : false,
-      mes: response ? "Updated your cart" : "Some thing went wrong",
-    })
+      mes: response ? "Added to cart" : "Something went wrong",
+    });
   }
-})
+});
 const removeProductInCart = asyncHandler(async (req, res) => {
   const { _id } = req.user
   const { pid, color } = req.params

@@ -6,12 +6,32 @@ import { Congrat, InputForm, Paypal } from "components"
 import withBaseComponent from "hocs/withBaseComponent"
 import { getCurrent } from "store/user/asyncActions"
 import Swal from "sweetalert2"
-import { apiCreateOrder } from "apis"
+import { apiCreateOrder, apiCreateOrderMomo, apiCheckStatusTransactionMomo } from "apis"
 
 const Checkout = ({ dispatch, navigate }) => {
   const { currentCart, current } = useSelector((state) => state.user)
   const [isSuccess, setIsSuccess] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("")
+  const [isPayMomo, setIsPayMomo] = useState(false)
+  
+  useEffect(() => {
+    if (isPayMomo) {
+      const handleBeforeUnload = (event) => {
+        // Custom message might not show in all modern browsers, but the default prompt will appear.
+        event.preventDefault();
+        event.returnValue = ''; // Required for most browsers to show the confirmation dialog.
+      };
+
+      // Add the event listener when the component mounts.
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      // Remove the event listener when the component unmounts.
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  }, [isPayMomo]);
+
   useEffect(() => {
     if (isSuccess) dispatch(getCurrent())
   }, [isSuccess])
@@ -57,6 +77,37 @@ const Checkout = ({ dispatch, navigate }) => {
         })
       }, 1500)
     }
+  }
+
+  const handlePayMomo = async () => {
+    const payload = {
+      products: currentCart,
+      total: Math.round(
+        +currentCart?.reduce((sum, el) => +el?.price * el.quantity + sum, 0)
+      ),
+      address: current?.address,
+    }
+    const orderId = "MOMO" + new Date().getTime();
+    console.log("🚀 ~ handlePayMomo ~ orderId:", orderId)
+    const resPayMomo = await apiCreateOrderMomo({ orderId, total: payload.total });
+    setIsPayMomo(true)
+    window.open(resPayMomo.payUrl, "_blank");
+    setTimeout(async () => {
+      setIsPayMomo(false)
+      const checkStatus = await apiCheckStatusTransactionMomo({ orderId: resPayMomo.orderId })
+      if (checkStatus.resultCode === 0) {
+        const response = await apiCreateOrder({ ...payload, status: "Succeed" })
+        if (response.success) {
+          setIsSuccess(true)
+          setTimeout(() => {
+            Swal.fire("Congrat!", "Order was created.", "success").then(() => {
+              navigate("/")
+            })
+          }, 1500)
+        }
+      }
+    }, 60000)
+    window.location.reload();
   }
   return (
     <div className="p-8 w-full grid grid-cols-10 h-full max-h-screen overflow-y-auto gap-6">
@@ -115,6 +166,7 @@ const Checkout = ({ dispatch, navigate }) => {
                 <option value="">Chọn</option>
                 <option value="OFFLINE">Thanh toán khi nhận hàng</option>
                 <option value="ONLINE">Thanh toán Paypal</option>
+                <option value="MOMO">Thanh toán MoMo</option>
               </select>
             </div>
             {paymentMethod === "ONLINE" && (
@@ -138,6 +190,11 @@ const Checkout = ({ dispatch, navigate }) => {
                     ) / 23500
                   )}
                 />
+              </div>
+            )}
+            {paymentMethod === "MOMO" && (
+              <div className="w-full mx-auto">
+                <button onClick={handlePayMomo} className="w-full bg-pink-500 text-white px-4 py-2 rounded-md">Thanh toán MoMo</button>
               </div>
             )}
           </div>

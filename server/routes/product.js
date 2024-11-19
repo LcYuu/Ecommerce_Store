@@ -10,7 +10,9 @@ router.post('/', [verifyAccessToken, isAdmin], uploader.fields([
     { name: 'thumb', maxCount: 1 }
 ]), ctrls.createProduct)
 router.get('/', ctrls.getProducts)
-router.put('/ratings', verifyAccessToken, ctrls.ratings)
+router.put('/ratings', verifyAccessToken, uploader.fields([
+    { name: 'images', maxCount: 10 },
+]), ctrls.ratings)
 
 
 router.put('/uploadimage/:pid', [verifyAccessToken, isAdmin], uploader.array('images', 10), ctrls.uploadImagesProduct)

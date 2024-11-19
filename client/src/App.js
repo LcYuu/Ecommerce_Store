@@ -98,19 +98,20 @@ function App() {
         <Route path={path.LOGIN} element={<Login />} />
         <Route path={path.LOGIN_SUCCESS} element={<LoginSuccess />} />
       </Routes>
-      <ToastContainer
+      {/* <ToastContainer
         position="top-right"
-        autoClose={5000}
-        hideProgressBar={true}
+        autoClose={3000}
+        hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        theme="light"
       />
       {/* Same as */}
-      <ToastContainer />
+      <ToastContainer /> */}
     </div>
   );
 }
