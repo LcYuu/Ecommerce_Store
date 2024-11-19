@@ -1,5 +1,5 @@
-import React, { useEffect } from "react"
-import { Route, Routes } from "react-router-dom"
+import React, { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import {
   Login,
   Home,
@@ -12,7 +12,9 @@ import {
   FinalRegister,
   ResetPassword,
   DetailCart,
-} from "pages/public"
+  LoginSuccess,
+  Blog,
+} from "pages/public";
 import {
   AdminLayout,
   ManageOrder,
@@ -22,30 +24,32 @@ import {
   Dashboard,
   CreateBlog,
   ManageBlog,
-} from "pages/admin"
+  ManageCategories,
+  CreateCategory,
+} from "pages/admin";
 import {
   MemberLayout,
   Personal,
   History,
   Wishlist,
   Checkout,
-} from "pages/member"
-import path from "ultils/path"
-import { getCategories } from "store/app/asyncActions"
-import { useDispatch, useSelector } from "react-redux"
-import { ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
-import { Cart, Modal } from "components"
-import { showCart } from "store/app/appSlice"
+} from "pages/member";
+import path from "ultils/path";
+import { getCategories } from "store/app/asyncActions";
+import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Cart, Modal } from "components";
+import { showCart } from "store/app/appSlice";
 
 function App() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { isShowModal, modalChildren, isShowCart } = useSelector(
     (state) => state.app
-  )
+  );
   useEffect(() => {
-    dispatch(getCategories())
-  }, [])
+    dispatch(getCategories());
+  }, []);
   return (
     <div className="font-jp">
       {isShowCart && (
@@ -62,6 +66,7 @@ function App() {
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />} />
           <Route path={path.BLOGS__ID__TITLE} element={<DetailBlogs />} />
+          <Route path={path.BLOGS} element={<Blog />} />
           <Route
             path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE}
             element={<DetailProduct />}
@@ -75,8 +80,10 @@ function App() {
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<Dashboard />} />
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />} />
+          <Route path={path.MANAGE_CATEGORIES} element={<ManageCategories />} />
           <Route path={path.MANAGE_PRODUCTS} element={<ManageProducts />} />
           <Route path={path.MANAGE_USER} element={<ManageUser />} />
+          <Route path={path.CREATE_CATEGORIES} element={<CreateCategory />} />
           <Route path={path.CREATE_PRODUCTS} element={<CreateProducts />} />
           <Route path={path.CREATE_BLOG} element={<CreateBlog />} />
           <Route path={path.MANAGE_BLOGS} element={<ManageBlog />} />
@@ -89,6 +96,7 @@ function App() {
         </Route>
         <Route path={path.FINAL_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />
+        <Route path={path.LOGIN_SUCCESS} element={<LoginSuccess />} />
       </Routes>
       {/* <ToastContainer
         position="top-right"
@@ -105,7 +113,7 @@ function App() {
       {/* Same as */}
       <ToastContainer /> */}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

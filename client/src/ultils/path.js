@@ -3,6 +3,7 @@ const path = {
   HOME: "",
   ALL: "*",
   LOGIN: "login",
+  LOGIN_SUCCESS: "login-success/:userId",
   PRODUCTS__CATEGORY: ":category",
   BLOGS__ID__TITLE: "blogs/:id/:title",
   BLOGS: "blogs",
@@ -19,8 +20,10 @@ const path = {
   ADMIN: "admin",
   DASHBOARD: "dashboard",
   MANAGE_USER: "manage-user",
+  MANAGE_CATEGORIES: "manage-categories",
   MANAGE_PRODUCTS: "manage-products",
   MANAGE_ORDER: "manage-order",
+  CREATE_CATEGORIES: "create-categories",
   CREATE_PRODUCTS: "create-products",
   CREATE_BLOG: "create-blog",
   MANAGE_BLOGS: "manage-blogs",
@@ -31,6 +34,6 @@ const path = {
   MY_CART: "my-cart",
   HISTORY: "buy-history",
   WISHLIST: "wishlist",
-}
+};
 
-export default path
+export default path;

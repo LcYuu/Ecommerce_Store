@@ -14,6 +14,7 @@ import { showModal } from "store/app/appSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { validate } from "ultils/helpers";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 
@@ -86,6 +87,7 @@ const Login = () => {
     }
   }, [payload, isRegister]);
 
+
   const finalRegister = async () => {
     const response = await apiFinalRegister(token);
     if (response.success) {
@@ -97,6 +99,14 @@ const Login = () => {
     setIsVerifiedEmail(false);
     setToken("");
   };
+  const handleLoginWithGoogle = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  };
+
+  const handleLoginWithFacebook = () => {
+    window.location.href = "http://localhost:5000/api/auth/facebook";
+  };
+
 
   return (
     <div className="w-screen h-screen relative">
@@ -219,6 +229,18 @@ const Login = () => {
           <Button handleOnClick={handleSubmit} fw>
             {isRegister ? "Register" : "Login"}
           </Button>
+          {!isRegister && (
+            <div className="flex justify-between w-full space-x-4">
+              <Button handleOnClick={handleLoginWithGoogle} fw>
+                <FaGoogle className="mr-2" />
+                Login with Google
+              </Button>
+              <Button handleOnClick={handleLoginWithFacebook} fw>
+                <FaFacebook className="mr-2" />
+                Login with Facebook
+              </Button>
+            </div>
+          )}
           <div className="flex items-center justify-between my-2 w-full text-sm">
             {!isRegister && (
               <span

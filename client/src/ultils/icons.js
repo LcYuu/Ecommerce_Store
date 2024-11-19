@@ -14,7 +14,7 @@ import {
     AiOutlineDashboard
 } from 'react-icons/ai'
 import { IoIosArrowForward } from 'react-icons/io'
-import { TbBrandProducthunt } from 'react-icons/tb'
+import { TbBrandProducthunt, TbCategory } from 'react-icons/tb'
 
 const icons = {
     RiPhoneFill,
@@ -39,7 +39,8 @@ const icons = {
     MdGroups,
     TbBrandProducthunt,
     RiBillLine,
-    BsCartPlus
+    BsCartPlus,
+    TbCategory
 }
 
 export default icons
