@@ -12,7 +12,7 @@ import path from "ultils/path"
 import { login } from "store/user/userSlice"
 import { showModal } from "store/app/appSlice"
 import { useDispatch } from "react-redux"
-import { toast } from "react-toastify"
+import { Toast } from "configs/toast"
 import { validate } from "ultils/helpers"
 
 const Login = () => {
@@ -44,8 +44,8 @@ const Login = () => {
   const handleForgotPassword = async () => {
     const response = await apiForgotPassword({ email })
     if (response.success) {
-      toast.success(response.mes, { theme: "colored" })
-    } else toast.info(response.mes, { theme: "colored" })
+      Toast.success(response.mes, { theme: "colored" })
+    } else Toast.info(response.mes, { theme: "colored" })
   }
   useEffect(() => {
     resetPayload()

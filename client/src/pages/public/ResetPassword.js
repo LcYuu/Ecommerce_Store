@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button } from '../../components'
 import { useParams } from 'react-router-dom'
 import { apiResetPassword } from '../../apis/user'
-import { toast } from 'react-toastify'
+import { Toast } from 'configs/toast'
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('')
@@ -11,8 +11,8 @@ const ResetPassword = () => {
     const handleResetPassword = async () => {
         const response = await apiResetPassword({ password, token })
         if (response.success) {
-            toast.success(response.mes, { theme: 'colored' })
-        } else toast.info(response.mes, { theme: 'colored' })
+            Toast.success(response.mes, { theme: 'colored' })
+        } else Toast.info(response.mes, { theme: 'colored' })
 
     }
     return (

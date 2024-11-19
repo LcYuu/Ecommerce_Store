@@ -9,7 +9,7 @@ import withBaseComponent from "hocs/withBaseComponent"
 import { showModal } from "store/app/appSlice"
 import { DetailProduct } from "pages/public"
 import { apiUpdateCart, apiUpdateWishlist } from "apis"
-import { toast } from "react-toastify"
+import { Toast } from "configs/toast"
 import { getCurrent } from "store/user/asyncActions"
 import { useSelector } from "react-redux"
 import Swal from "sweetalert2"
@@ -61,16 +61,16 @@ const Product = ({
         title: productData?.title,
       })
       if (response.success) {
-        toast.success(response.mes)
+        Toast.success(response.mes)
         dispatch(getCurrent())
-      } else toast.error(response.mes)
+      } else Toast.error(response.mes)
     }
     if (flag === "WISHLIST") {
       const response = await apiUpdateWishlist(pid)
       if (response.success) {
         dispatch(getCurrent())
-        toast.success(response.mes)
-      } else toast.error(response.mes)
+        Toast.success(response.mes)
+      } else Toast.error(response.mes)
     }
     if (flag === "QUICK_VIEW") {
       dispatch(
