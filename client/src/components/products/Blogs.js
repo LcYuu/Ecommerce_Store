@@ -6,7 +6,7 @@ import path from "ultils/path"
 const Blogs = () => {
   const [blogs, setBlogs] = useState()
   const fetchBlogs = async () => {
-    const response = await apiGetBlogs({ limit: 4 })
+    const response = await apiGetBlogs({ limit: 8 })
     if (response.success) setBlogs(response.blogs)
   }
   useEffect(() => {

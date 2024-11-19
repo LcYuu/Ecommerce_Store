@@ -13,6 +13,7 @@ import {
   ResetPassword,
   DetailCart,
   LoginSuccess,
+  Blog,
 } from "pages/public";
 import {
   AdminLayout,
@@ -23,6 +24,8 @@ import {
   Dashboard,
   CreateBlog,
   ManageBlog,
+  ManageCategories,
+  CreateCategory,
 } from "pages/admin";
 import {
   MemberLayout,
@@ -63,6 +66,7 @@ function App() {
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />} />
           <Route path={path.BLOGS__ID__TITLE} element={<DetailBlogs />} />
+          <Route path={path.BLOGS} element={<Blog />} />
           <Route
             path={path.DETAIL_PRODUCT__CATEGORY__PID__TITLE}
             element={<DetailProduct />}
@@ -76,8 +80,10 @@ function App() {
         <Route path={path.ADMIN} element={<AdminLayout />}>
           <Route path={path.DASHBOARD} element={<Dashboard />} />
           <Route path={path.MANAGE_ORDER} element={<ManageOrder />} />
+          <Route path={path.MANAGE_CATEGORIES} element={<ManageCategories />} />
           <Route path={path.MANAGE_PRODUCTS} element={<ManageProducts />} />
           <Route path={path.MANAGE_USER} element={<ManageUser />} />
+          <Route path={path.CREATE_CATEGORIES} element={<CreateCategory />} />
           <Route path={path.CREATE_PRODUCTS} element={<CreateProducts />} />
           <Route path={path.CREATE_BLOG} element={<CreateBlog />} />
           <Route path={path.MANAGE_BLOGS} element={<ManageBlog />} />

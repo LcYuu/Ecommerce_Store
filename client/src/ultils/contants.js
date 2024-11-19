@@ -183,7 +183,7 @@ export const voteOptions = [
     text: "Perfect",
   },
 ]
-const { AiOutlineDashboard, MdGroups, TbBrandProducthunt, RiBillLine } = icons
+const { AiOutlineDashboard, MdGroups, TbBrandProducthunt, RiBillLine, TbCategory } = icons
 export const adminSidebar = [
   {
     id: 1,
@@ -202,6 +202,22 @@ export const adminSidebar = [
   {
     id: 3,
     type: "PARENT",
+    text: "Categories",
+    icon: <TbCategory size={20} />,
+    submenu: [
+      {
+        text: "Create category",
+        path: `/${path.ADMIN}/${path.CREATE_CATEGORIES}`,
+      },
+      {
+        text: "Manage categories",
+        path: `/${path.ADMIN}/${path.MANAGE_CATEGORIES}`,
+      },
+    ],
+  },
+  {
+    id: 4,
+    type: "PARENT",
     text: "Products",
     icon: <TbBrandProducthunt size={20} />,
     submenu: [
@@ -216,7 +232,7 @@ export const adminSidebar = [
     ],
   },
   {
-    id: 4,
+    id: 5,
     type: "SINGLE",
     text: "Manage orders",
     path: `/${path.ADMIN}/${path.MANAGE_ORDER}`,
