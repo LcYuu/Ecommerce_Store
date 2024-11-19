@@ -49,6 +49,7 @@ const DetailCart = ({ location, navigate }) => {
                         thumbnail={el.thumbnail}
                         price={el.price}
                         pid={el.product?._id}
+                        inStock={el.product?.quantity}
                     />
                 ))}
             </div>

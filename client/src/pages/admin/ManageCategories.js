@@ -45,11 +45,11 @@ const ManageCategories = () => {
     <div className="w-full flex flex-col gap-4 relative">
       {editCategory && (
         <div className="absolute inset-0 min-h-screen bg-gray-100 z-50">
-          <UpdateProduct
+          {/* <UpdateProduct
             editCategory={editCategory}
             render={render}
             setEditCategory={setEditCategory}
-          />
+          /> */}
         </div>
       )}
       <div className="h-[69px] w-full"></div>
@@ -105,7 +105,7 @@ const ManageCategories = () => {
                   <BiEdit size={20} />
                 </span>
                 <span
-                  onClick={() => handleDeleteProduct(el._id)}
+                  // onClick={() => handleDeleteProduct(el._id)}
                   className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer px-1"
                 >
                   <RiDeleteBin6Line size={20} />
