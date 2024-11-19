@@ -359,20 +359,37 @@ const updateCart = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findById(_id).select("cart");
+  const product = await Product.findById(pid);
+
+  if (!product) {
+    return res.status(400).json({
+      success: false,
+      mes: "Product not found"
+    });
+  }
+
   const alreadyProduct = user?.cart?.find(
     (el) => el.product.toString() === pid && el.color === color
   );
 
-  if (alreadyProduct) {
-    const product = await Product.findById(pid);
-    if (!product || quantity > product.quantity) {
-      return res.status(400).json({
-        success: false,
-        mes: "Quantity exceeds available stock"
-      });
+  // Kiểm tra số lượng trong giỏ hàng của các sản phẩm cùng pid khác color
+  const totalQuantityOtherColors = user?.cart?.reduce((total, item) => {
+    if (item.product.toString() === pid && item.color !== color) {
+      return total + item.quantity;
     }
-    
+    return total;
+  }, 0);
+
+  if (alreadyProduct) {
+    // Nếu đang cập nhật số lượng trực tiếp
     if (isUpdatingQuantity) {
+      if (quantity + totalQuantityOtherColors > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          mes: "Tổng số lượng vượt quá số lượng có sẵn"
+        });
+      }
+
       const response = await User.updateOne(
         { _id, "cart.product": pid, "cart.color": color },
         {
@@ -390,11 +407,20 @@ const updateCart = asyncHandler(async (req, res) => {
         mes: response ? "Updated cart quantity" : "Something went wrong",
       });
     } else {
+      // Nếu đang thêm số lượng vào sản phẩm đã có
+      const newQuantity = alreadyProduct.quantity + quantity;
+      if (newQuantity + totalQuantityOtherColors > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          mes: "Total quantity exceeds available stock"
+        });
+      }
+
       const response = await User.updateOne(
         { _id, "cart.product": pid, "cart.color": color },
         {
           $set: {
-            "cart.$.quantity": alreadyProduct.quantity + quantity,
+            "cart.$.quantity": newQuantity,
             "cart.$.price": price,
             "cart.$.thumbnail": thumbnail,
             "cart.$.title": title,
@@ -408,6 +434,14 @@ const updateCart = asyncHandler(async (req, res) => {
       });
     }
   } else {
+    // Nếu thêm mới sản phẩm vào giỏ hàng
+    if (quantity + totalQuantityOtherColors > product.quantity) {
+      return res.status(400).json({
+        success: false,
+        mes: "Total quantity exceeds available stock"
+      });
+    }
+
     const response = await User.findByIdAndUpdate(
       _id,
       {
