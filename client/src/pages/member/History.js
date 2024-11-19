@@ -1,45 +1,72 @@
-import { apiGetOrders, apiGetUserOrders } from "apis"
-import { CustomSelect, InputForm, Pagination } from "components"
-import withBaseComponent from "hocs/withBaseComponent"
-import moment from "moment"
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { createSearchParams, useSearchParams } from "react-router-dom"
-import { statusOrders } from "ultils/contants"
+import { apiGetOrders, apiGetUserOrders } from "apis";
+import { CustomSelect, InputForm, Pagination } from "components";
+import withBaseComponent from "hocs/withBaseComponent";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { createSearchParams, useSearchParams } from "react-router-dom";
+import { statusOrders } from "ultils/contants";
 
 const History = ({ navigate, location }) => {
-  const [orders, setOrders] = useState(null)
-  const [counts, setCounts] = useState(0)
-  const [params] = useSearchParams()
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [counts, setCounts] = useState(0);
+  const [params] = useSearchParams();
   const {
     register,
     formState: { errors },
     watch,
     setValue,
-  } = useForm()
-  const q = watch("q")
-  const status = watch("status")
+  } = useForm();
+  const [status, setStatus] = useState(statusOrders[0].value);
+
   const fetchPOrders = async (params) => {
     const response = await apiGetUserOrders({
       ...params,
       limit: process.env.REACT_APP_LIMIT,
-    })
+    });
     if (response.success) {
-      setOrders(response.orders)
-      setCounts(response.counts)
+      setOrders(response.orders);
+      setFilteredOrders(response.orders); // Initialize filteredOrders
+      setCounts(response.counts);
     }
-  }
-  useEffect(() => {
-    const pr = Object.fromEntries([...params])
-    fetchPOrders(pr)
-  }, [params])
+  };
 
-  const handleSearchStatus = ({ value }) => {
-    navigate({
-      pathname: location.pathname,
-      search: createSearchParams({ status: value }).toString(),
-    })
-  }
+  useEffect(() => {
+    const pr = Object.fromEntries([...params]);
+    fetchPOrders(pr);
+  }, [params]);
+
+  useEffect(() => {
+    const currentStatus = watch("status");
+    if (currentStatus) {
+      setStatus(currentStatus);
+    }
+  }, [watch("status")]);
+
+  const handleSearchStatus = (selectedOption) => {
+    if (selectedOption && selectedOption.value) {
+      setStatus(selectedOption.value);
+      navigate({
+        pathname: location.pathname,
+        search: createSearchParams({ status: selectedOption.value }).toString(),
+      });
+    }
+  };
+
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    setValue("q", searchTerm);
+
+    // Lọc các đơn hàng dựa trên từ khóa tìm kiếm
+    const newFilteredOrders = orders.filter(order =>
+      order.products.some(product =>
+        product.title.toLowerCase().includes(searchTerm)
+      )
+    );
+
+    setFilteredOrders(newFilteredOrders);
+  };
 
   return (
     <div className="w-full relative px-4">
@@ -49,20 +76,24 @@ const History = ({ navigate, location }) => {
       <div className="flex justify-end items-center px-4">
         <form className="w-[45%] grid grid-cols-2 gap-4">
           <div className="col-span-1">
-            <InputForm
+            <input
               id="q"
-              register={register}
-              errors={errors}
-              fullWidth
-              placeholder="Search orders by status,..."
+              {...register("q")}
+              className="w-full h-[35px] border border-gray-300 rounded-md"
+              placeholder="  Search orders by product name"
+              onChange={handleSearch}
+              value={watch("q") || ""}
             />
           </div>
           <div className="col-span-1 flex items-center">
             <CustomSelect
+              placeholder={status}
               options={statusOrders}
               value={status}
-              onChange={(val) => handleSearchStatus(val)}
+              onChange={handleSearchStatus}
               wrapClassname="w-full"
+              isSearchable={false}
+              isDisabled={false}
             />
           </div>
         </form>
@@ -78,7 +109,7 @@ const History = ({ navigate, location }) => {
           </tr>
         </thead>
         <tbody>
-          {orders?.map((el, idx) => (
+          {filteredOrders.map((el, idx) => (
             <tr className="border-b" key={el._id}>
               <td className="text-center py-2">
                 {(+params.get("page") > 1 ? +params.get("page") - 1 : 0) *
@@ -88,11 +119,8 @@ const History = ({ navigate, location }) => {
               </td>
               <td className="text-center max-w-[500px] py-2">
                 <span className="grid grid-cols-4 gap-4">
-                  {el.products?.map((item) => (
-                    <span
-                      className="flex col-span-1 items-center gap-2"
-                      key={item._id}
-                    >
+                  {el.products.map((item) => (
+                    <span className="flex col-span-1 items-center gap-2" key={item._id}>
                       <img
                         src={item.thumbnail}
                         alt="thumb"
@@ -122,7 +150,7 @@ const History = ({ navigate, location }) => {
         <Pagination totalCount={counts} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default withBaseComponent(History)
+export default withBaseComponent(History);

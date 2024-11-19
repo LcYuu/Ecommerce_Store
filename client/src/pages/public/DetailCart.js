@@ -58,7 +58,13 @@ const DetailCart = ({ location, navigate }) => {
                     <span className='text-main font-bold'>{`${formatMoney(currentCart?.reduce((sum, el) => +el?.price * el.quantity + sum, 0))} VND`}</span>
                 </span>
                 <span className='text-xs italic'>Shipping, taxes, and discounts calculated at checkout</span>
-                <Button handleOnClick={handleSubmit}>Checkout</Button>
+                <button 
+                    className='px-4 py-2 rounded-md text-white flex items-center justify-center bg-main text-semibold my-2'
+                    disabled={currentCart?.length === 0}
+                    onClick={handleSubmit}
+                >
+                    Checkout
+                </button>
             </div>
         </div >
     )

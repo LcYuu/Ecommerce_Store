@@ -28,7 +28,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="lg:h-[407px] w-full bg-gray-900 flex items-center justify-center text-white text-[13px]">
-        <div className="lg:w-main flex lg:flex-grow-0 flex-col">
+        <div className="lg:w-main flex lg:flex-grow-0">
           <div className="flex-2 flex flex-col gap-2">
             <h3 className="mb-[20px] mt-8 text-[15px] font-medium border-l-2 border-main pl-[15px]">
               ABOUT US
