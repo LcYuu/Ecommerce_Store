@@ -62,6 +62,7 @@ const CreateCategory = () => {
   //     }
   //   };
 
+  //test nè
   const handleCreateCategory = async (data) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
