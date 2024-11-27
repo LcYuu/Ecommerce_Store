@@ -34,7 +34,6 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
     setPreview((prev) => ({ ...prev, image: base64Image }));
   };
   useEffect(() => {
-    console.log("editCategory: ", editCategory);
     reset({
       title: editCategory?.title || "",
       brand: editCategory?.brand || "",
@@ -57,8 +56,6 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
 
   const handleUpdateCategory = async (data) => {
     const invalids = validate(payload, setInvalidFields);
-    console.log("Form data: ", data);
-    console.log("Payload: ", payload);
     if (invalids === 0) {
       const finalPayload = { ...data, ...payload };
       const formData = new FormData();
@@ -77,7 +74,6 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
 
       dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
       const response = await apiUpdateCategory(formData, editCategory._id);
-      console.log("Response: ", response);
       dispatch(showModal({ isShowModal: false, modalChildren: null }));
 
       if (response.success) {
