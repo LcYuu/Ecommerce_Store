@@ -77,12 +77,24 @@ const getAllCategories = asyncHandler(async (req, res) => {
 
 const updateCategory = asyncHandler(async (req, res) => {
   const { pcid } = req.params;
-  const response = await ProductCategory.findByIdAndUpdate(pcid, req.body, {
-    new: true,
-  });
+  const files = req?.files;
+  if (files?.image) req.body.image = files?.image[0]?.path;
+  if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
+  console.log("pcid: ", pcid);
+  console.log("files", files);
+  console.log("body: ", req.body);
+  const updatedCategory = await ProductCategory.findByIdAndUpdate(
+    pcid,
+    req.body,
+    {
+      new: true,
+    }
+  );
   return res.json({
-    success: response ? true : false,
-    updatedCategory: response ? response : "Cannot update product-category",
+    success: updatedCategory ? true : false,
+    mes: updatedCategory
+      ? "Updated category successfully"
+      : "Cannot update category",
   });
 });
 const deleteCategory = asyncHandler(async (req, res) => {

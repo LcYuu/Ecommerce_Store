@@ -1,4 +1,4 @@
-import { apiGetAllCategories } from "apis";
+import { apiDeleteCategory, apiGetAllCategories } from "apis";
 import { InputForm, Pagination } from "components";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -6,6 +6,9 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import moment from "moment";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import UpdateCategory from "./UpdateCategory";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const ManageCategories = () => {
   const {
@@ -16,14 +19,14 @@ const ManageCategories = () => {
   const [categories, setCategories] = useState(null);
   const [counts, setCounts] = useState(0);
   const [params] = useSearchParams();
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [editCategory, setEditCategory] = useState(null)
-  const [update, setUpdate] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [editCategory, setEditCategory] = useState(null);
+  const [update, setUpdate] = useState(false);
 
   const render = useCallback(() => {
-    setUpdate(!update)
-  })
+    setUpdate(!update);
+  });
 
   const fetchCategories = async (params) => {
     const response = await apiGetAllCategories({
@@ -36,20 +39,36 @@ const ManageCategories = () => {
     }
   };
 
+  const handleDeleteCategory = (pcid) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure remove this category",
+      icon: "warning",
+      showCancelButton: true,
+    }).then(async (rs) => {
+      if (rs.isConfirmed) {
+        const response = await apiDeleteCategory(pcid)
+        if (response.success) toast.success(response.mes)
+        else toast.error(response.mes)
+        render()
+      }
+    })
+  }
+
   useEffect(() => {
     const searchParams = Object.fromEntries([...params]);
     fetchCategories(searchParams);
-  }, [params]);
+  }, [params, update]);
 
   return (
     <div className="w-full flex flex-col gap-4 relative">
       {editCategory && (
         <div className="absolute inset-0 min-h-screen bg-gray-100 z-50">
-          {/* <UpdateProduct
+          <UpdateCategory
             editCategory={editCategory}
             render={render}
             setEditCategory={setEditCategory}
-          /> */}
+          />
         </div>
       )}
       <div className="h-[69px] w-full"></div>
@@ -105,7 +124,7 @@ const ManageCategories = () => {
                   <BiEdit size={20} />
                 </span>
                 <span
-                  onClick={() => handleDeleteProduct(el._id)}
+                  onClick={() => handleDeleteCategory(el._id)}
                   className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer px-1"
                 >
                   <RiDeleteBin6Line size={20} />
