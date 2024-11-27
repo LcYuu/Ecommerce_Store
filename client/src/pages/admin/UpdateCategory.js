@@ -62,15 +62,15 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
     if (invalids === 0) {
       const finalPayload = { ...data, ...payload };
       const formData = new FormData();
+      finalPayload.image = data?.image?.length === 0 ? preview.image : data.image[0]
       for (let [key, value] of Object.entries(finalPayload)) {
         if (key === "brand" && typeof value === "string") {
           const brandsArray = value.split(",").map((item) => item.trim());
           brandsArray.forEach((brand) => {
             formData.append("brand", brand);
           });
-        } else if (key === "image" && value[0]) {
-          formData.append("image", value[0]);
-        } else {
+        } 
+        else {
           formData.append(key, value);
         }
       }
