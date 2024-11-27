@@ -307,12 +307,7 @@ export const blockStatus = [
   },
 ]
 export const statusOrders = [
-  {
-    label: "Cancalled",
-    value: "Cancalled",
-  },
-  {
-    label: "Succeed",
-    value: "Succeed",
-  },
-]
+  { value: "Pending", label: "Pending" },
+  { value: "Cancelled", label: "Cancelled" },
+  { value: "Succeed", label: "Succeed" },
+];

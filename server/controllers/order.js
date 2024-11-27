@@ -46,14 +46,26 @@ const createOrder = asyncHandler(async (req, res) => {
   })
 })
 const updateStatus = asyncHandler(async (req, res) => {
-  const { oid } = req.params
-  const { status } = req.body
-  if (!status) throw new Error("Missing status")
-  const response = await Order.findByIdAndUpdate(oid, { status }, { new: true })
+  const { oid } = req.params;
+  const { status, statusMessage } = req.body;
+  
+  if (!status) throw new Error("Missing status");
+  
+  const updateData = {
+    status,
+    ...(statusMessage && { statusMessage })
+  };
+
+  const response = await Order.findByIdAndUpdate(
+    oid, 
+    updateData,
+    { new: true }
+  );
+
   return res.json({
     success: response ? true : false,
     mes: response ? "Updated." : "Something went wrong",
-  })
+  });
 })
 const getUserOrders = asyncHandler(async (req, res) => {
   const queries = { ...req.query }

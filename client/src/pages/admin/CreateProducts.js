@@ -116,7 +116,7 @@ const CreateProducts = () => {
                             validate={{
                                 required: 'Need fill this field',
                                 min: {
-                                    value: 0,
+                                    value: 1,
                                     message: 'Quantity cannot be negative'
                                 }
                             }}

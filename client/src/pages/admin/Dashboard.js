@@ -14,6 +14,7 @@ const Dashboard = () => {
     from: "",
     to: "",
   })
+  const [update, setUpdate] = useState(false)
   const fetchDataDashboard = async (params) => {
     const response = await apiGetDashboard(params)
     if (response.success) setData(response.data)
@@ -25,20 +26,37 @@ const Dashboard = () => {
     if (customTime.to) params.to = customTime.to
     fetchDataDashboard(params)
   }, [isMonth, customTime])
+  useEffect(() => {
+    const fetchDataDashboard = async () => {
+      const response = await apiGetDashboard()
+      if (response.success) setData(response.data)
+    }
+    fetchDataDashboard()
+  }, [update])
   const handleCustomTime = () => {
     setCustomTime({ from: "", to: "" })
   }
   const pieData = {
-    labels: ["Tông đơn đã hủy", "Tổng đơn thành công"],
+    labels: ["Tông đơn đã hủy", "Tổng đơn thành công", "Tổng đơn chưa thanh toán"],
     datasets: [
       {
         label: "Tổng đơn",
         data: [
           data?.pieData?.find((el) => el.status === "Cancelled")?.sum,
           data?.pieData?.find((el) => el.status === "Succeed")?.sum,
+          data?.pieData?.find((el) => el.status === "Pending")?.sum +
+          data?.pieData?.find((el) => el.status === "Cancel Rejected")?.sum || 0,
         ],
-        backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(54, 162, 235, 0.2)"],
-        borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+        ],
         borderWidth: 1,
       },
     ],
