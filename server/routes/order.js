@@ -1,12 +1,11 @@
-const router = require("express").Router()
-const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken")
-const ctrls = require("../controllers/order")
-const config = require("../config/momo.config")
-const crypto = require("crypto")
-const axios = require("axios")
+const router = require("express").Router();
+const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
+const ctrls = require("../controllers/order");
+const config = require("../config/momo.config");
+const crypto = require("crypto");
+const axios = require("axios");
 
-
-router.post('/payment', async (req, res) => {
+router.post("/payment", async (req, res) => {
   let {
     accessKey,
     secretKey,
@@ -21,7 +20,7 @@ router.post('/payment', async (req, res) => {
     lang,
   } = config;
 
-  const { orderId, total } = req.body
+  const { orderId, total } = req.body;
 
   var amount = total;
   var requestId = orderId;
@@ -29,38 +28,38 @@ router.post('/payment', async (req, res) => {
   //before sign HMAC SHA256 with format
   //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
   var rawSignature =
-    'accessKey=' +
+    "accessKey=" +
     accessKey +
-    '&amount=' +
+    "&amount=" +
     amount +
-    '&extraData=' +
+    "&extraData=" +
     extraData +
-    '&ipnUrl=' +
+    "&ipnUrl=" +
     ipnUrl +
-    '&orderId=' +
+    "&orderId=" +
     orderId +
-    '&orderInfo=' +
+    "&orderInfo=" +
     orderInfo +
-    '&partnerCode=' +
+    "&partnerCode=" +
     partnerCode +
-    '&redirectUrl=' +
+    "&redirectUrl=" +
     redirectUrl +
-    '&requestId=' +
+    "&requestId=" +
     requestId +
-    '&requestType=' +
+    "&requestType=" +
     requestType;
 
   //signature
   var signature = crypto
-    .createHmac('sha256', secretKey)
+    .createHmac("sha256", secretKey)
     .update(rawSignature)
-    .digest('hex');
+    .digest("hex");
 
   //json object send to MoMo endpoint
   const requestBody = JSON.stringify({
     partnerCode: partnerCode,
-    partnerName: 'Test',
-    storeId: 'MomoTestStore',
+    partnerName: "Test",
+    storeId: "MomoTestStore",
     requestId: requestId,
     amount: amount,
     orderId: orderId,
@@ -72,16 +71,16 @@ router.post('/payment', async (req, res) => {
     autoCapture: autoCapture,
     extraData: extraData,
     orderGroupId: orderGroupId,
-    signature: signature
+    signature: signature,
   });
 
   // options for axios
   const options = {
-    method: 'POST',
-    url: 'https://test-payment.momo.vn/v2/gateway/api/create',
+    method: "POST",
+    url: "https://test-payment.momo.vn/v2/gateway/api/create",
     headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(requestBody),
+      "Content-Type": "application/json",
+      "Content-Length": Buffer.byteLength(requestBody),
     },
     data: requestBody,
   };
@@ -90,20 +89,20 @@ router.post('/payment', async (req, res) => {
   let result;
   try {
     result = await axios(options);
-    console.log("🚀 ~ router.post ~ result:", result)
+    console.log("🚀 ~ router.post ~ result:", result);
     return res.status(200).json(result.data);
   } catch (error) {
     return res.status(500).json({ statusCode: 500, message: error.message });
   }
 });
 
-router.post('/callback', async (req, res) => {
+router.post("/callback", async (req, res) => {
   /**
     resultCode = 0: giao dịch thành công.
     resultCode = 9000: giao dịch được cấp quyền (authorization) thành công .
     resultCode <> 0: giao dịch thất bại.
    */
-  console.log('callback: ');
+  console.log("callback: ");
   console.log(req.body);
   /**
    * Dựa vào kết quả này để update trạng thái đơn hàng
@@ -128,34 +127,34 @@ router.post('/callback', async (req, res) => {
   return res.status(204).json(req.body);
 });
 
-router.post('/check-status-transaction', async (req, res) => {
+router.post("/check-status-transaction", async (req, res) => {
   const { orderId } = req.body;
 
   // const signature = accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
   // &requestId=$requestId
-  var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
-  var accessKey = 'F8BBA842ECF85';
+  var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+  var accessKey = "F8BBA842ECF85";
   const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
 
   const signature = crypto
-    .createHmac('sha256', secretKey)
+    .createHmac("sha256", secretKey)
     .update(rawSignature)
-    .digest('hex');
+    .digest("hex");
 
   const requestBody = JSON.stringify({
-    partnerCode: 'MOMO',
+    partnerCode: "MOMO",
     requestId: orderId,
     orderId: orderId,
     signature: signature,
-    lang: 'vi',
+    lang: "vi",
   });
 
   // options for axios
   const options = {
-    method: 'POST',
-    url: 'https://test-payment.momo.vn/v2/gateway/api/query',
+    method: "POST",
+    url: "https://test-payment.momo.vn/v2/gateway/api/query",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     data: requestBody,
   };
@@ -165,17 +164,17 @@ router.post('/check-status-transaction', async (req, res) => {
   return res.status(200).json(result.data);
 });
 
-
-router.post("/", verifyAccessToken, ctrls.createOrder)
-router.put("/status/:oid", verifyAccessToken, isAdmin, ctrls.updateStatus)
-router.get("/admin", verifyAccessToken, isAdmin, ctrls.getOrders)
-router.get("/dashboard", ctrls.getDashboard)
-router.get("/", verifyAccessToken, ctrls.getUserOrders)
+router.post("/", verifyAccessToken, ctrls.createOrder);
+//router.put("/status/:oid", verifyAccessToken, isAdmin, ctrls.updateStatus)
+router.put("/status/:oid", verifyAccessToken, ctrls.updateStatus);
+router.get("/admin", verifyAccessToken, isAdmin, ctrls.getOrders);
+router.get("/dashboard", ctrls.getDashboard);
+router.get("/", verifyAccessToken, ctrls.getUserOrders);
 router.delete(
   "/admin/:id",
   verifyAccessToken,
   isAdmin,
   ctrls.deleteOrderByAdmin
-)
+);
 
-module.exports = router
+module.exports = router;

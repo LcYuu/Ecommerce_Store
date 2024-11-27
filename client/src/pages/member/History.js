@@ -1,10 +1,11 @@
-import { apiGetOrders, apiGetUserOrders } from "apis";
+import { apiGetOrders, apiGetUserOrders, apiUpdateStatus } from "apis";
 import { CustomSelect, InputForm, Pagination } from "components";
 import withBaseComponent from "hocs/withBaseComponent";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createSearchParams, useSearchParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import { statusOrders } from "ultils/contants";
 
 const History = ({ navigate, location }) => {
@@ -58,14 +59,99 @@ const History = ({ navigate, location }) => {
     const searchTerm = e.target.value.toLowerCase();
     setValue("q", searchTerm);
 
-    // Lọc các đơn hàng dựa trên từ khóa tìm kiếm
-    const newFilteredOrders = orders.filter(order =>
-      order.products.some(product =>
+    // Filter orders based on the search term and exclude "Request Cancel" status
+    const newFilteredOrders = orders.filter((order) =>
+      order.products.some((product) =>
         product.title.toLowerCase().includes(searchTerm)
-      )
+      ) && order.status !== "Request Cancel" // Exclude "Request Cancel" status
     );
 
     setFilteredOrders(newFilteredOrders);
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    Swal.fire({
+      title: "Bạn có chắc chắn muốn yêu cầu hủy đơn hàng này?",
+      text: "Yêu cầu hủy sẽ được gửi tới admin để xác nhận",
+      icon: "warning", 
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Gửi yêu cầu",
+      cancelButtonText: "Quay lại",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const data = { status: "Request Cancel" };
+          const response = await apiUpdateStatus(orderId, data);
+          
+          if (response.success === true) {
+            Swal.fire(
+              "Đã gửi!",
+              "Yêu cầu hủy đơn hàng đã được gửi tới admin.",
+              "success"
+            );
+            fetchPOrders(Object.fromEntries([...params]));
+          } else {
+            Swal.fire(
+              "Thất bại!",
+              "Không thể gửi yêu cầu hủy. Vui lòng thử lại.",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error updating order status:", error);
+          Swal.fire("Lỗi!", "Có lỗi xảy ra khi gửi yêu cầu hủy.", "error");
+        }
+      }
+    });
+  };
+
+  const renderStatusMessage = (status, orderId) => {
+    switch (status) {
+      case 'Request Cancel':
+        return (
+          <div className="flex flex-col items-center">
+            <span className="text-yellow-500">Đang chờ xác nhận hủy</span>
+            <span className="text-xs text-gray-500">Yêu cầu đang được xử lý</span>
+          </div>
+        );
+      case 'Cancel Rejected':
+        return (
+          <div className="flex flex-col items-center">
+            <span className="text-red-500">Yêu cầu hủy đã bị từ chối</span>
+            <button
+              onClick={() => handleCancelOrder(orderId)}
+              className="mt-2 px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-700 text-xs"
+            >
+              Gửi yêu cầu hủy mới
+            </button>
+          </div>
+        );
+      case 'Pending Approval':
+        return (
+          <div className="flex flex-col items-center">
+            <span className="text-orange-500">Yêu cầu hủy đang chờ duyệt</span>
+            <span className="text-xs text-gray-500">Vui lòng chờ admin xử lý</span>
+          </div>
+        );
+      case 'Pending':
+        return (
+          <div className="flex flex-col items-center">
+            {status}
+            <button
+              onClick={() => handleCancelOrder(orderId)}
+              className="ml-4 px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-700"
+            >
+              Hủy
+            </button>
+          </div>
+        );
+      case 'Cancelled':
+        return <span className="text-red-500">Cancelled</span>;
+      default:
+        return status;
+    }
   };
 
   return (
@@ -120,7 +206,10 @@ const History = ({ navigate, location }) => {
               <td className="text-center max-w-[500px] py-2">
                 <span className="grid grid-cols-4 gap-4">
                   {el.products.map((item) => (
-                    <span className="flex col-span-1 items-center gap-2" key={item._id}>
+                    <span
+                      className="flex col-span-1 items-center gap-2"
+                      key={item._id}
+                    >
                       <img
                         src={item.thumbnail}
                         alt="thumb"
@@ -138,7 +227,14 @@ const History = ({ navigate, location }) => {
                 </span>
               </td>
               <td className="text-center py-2">{el.total + " 💲"}</td>
-              <td className="text-center py-2">{el.status}</td>
+              <td className="text-center py-2">
+                {renderStatusMessage(el.status, el._id)}
+                {el.statusMessage && (
+                  <span className="block text-xs text-gray-500 mt-1 italic">
+                    {el.statusMessage}
+                  </span>
+                )}
+              </td>
               <td className="text-center py-2">
                 {moment(el.createdAt)?.format("DD/MM/YYYY")}
               </td>
