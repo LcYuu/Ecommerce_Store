@@ -26,19 +26,18 @@ const createOrder = asyncHandler(async (req, res) => {
   if (status) data.status = status
   const rs = await Order.create(data)
   if (rs) {
-    await Product.updateMany(
-      { _id: { $in: products.map((el) => el.product._id) } },
-      {
-        $inc: {
-          quantity: -1 * products.reduce((acc, el) => {
-            return acc + el.quantity;
-          }, 0),
-          sold: products.reduce((acc, el) => {
-            return acc + el.quantity;
-          }, 0),
+    const bulkOperations = products.map((el) => ({
+      updateOne: {
+        filter: { _id: el.product._id },
+        update: {
+          $inc: {
+            quantity: -el.quantity,
+            sold: el.quantity,
+          },
         },
-      }
-    )
+      },
+    }))
+    await Product.bulkWrite(bulkOperations)
   }
   return res.json({
     success: rs ? true : false,
@@ -61,6 +60,46 @@ const updateStatus = asyncHandler(async (req, res) => {
     updateData,
     { new: true }
   );
+
+//   const { oid } = req.params
+//   const { status } = req.body
+//   if (!status) throw new Error("Missing status")
+//   const order = await Order.findById(oid)
+//   if (!order) throw new Error("Order not found")
+//   const statusOld = order.status
+//   const products = order.products
+//   if (status === "Cancelled") {
+//     if (statusOld !== "Cancelled") {
+//       const bulkOperations = products.map((el) => ({
+//         updateOne: {
+//           filter: { _id: el.product._id },
+//           update: {
+//             $inc: {
+//               quantity: el.quantity,
+//               sold: -el.quantity,
+//             },
+//           },
+//         },
+//       }))
+//       await Product.bulkWrite(bulkOperations)
+//     }
+//   } else {
+//     if (statusOld === "Cancelled") {
+//       const bulkOperations = products.map((el) => ({
+//         updateOne: {
+//           filter: { _id: el.product._id },
+//           update: {
+//             $inc: {
+//               quantity: -el.quantity,
+//               sold: el.quantity,
+//             },
+//           },
+//         },
+//       }))
+//       await Product.bulkWrite(bulkOperations)
+//     }
+//   }
+//   const response = await Order.findByIdAndUpdate(oid, { status }, { new: true })
 
   return res.json({
     success: response ? true : false,
