@@ -113,6 +113,9 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (files?.thumb) req.body.thumb = files?.thumb[0]?.path
   if (files?.images) req.body.images = files?.images?.map((el) => el.path)
   if (req.body && req.body.title) req.body.slug = slugify(req.body.title)
+  console.log("pid: ", pid);
+  console.log("files: ", files);
+  console.log("body: ", req.body);
   const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, {
     new: true,
   })

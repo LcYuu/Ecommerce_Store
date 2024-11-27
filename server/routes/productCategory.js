@@ -11,7 +11,12 @@ router.post(
 );
 router.get("/", ctrls.getCategories);
 router.get("/all", ctrls.getAllCategories);
-router.put("/:pcid", [verifyAccessToken, isAdmin], ctrls.updateCategory);
+router.put(
+  "/:pcid",
+  [verifyAccessToken, isAdmin],
+  uploader.fields([{ name: "image", maxCount: 1 }]),
+  ctrls.updateCategory
+);
 router.delete("/:pcid", [verifyAccessToken, isAdmin], ctrls.deleteCategory);
 
 module.exports = router;

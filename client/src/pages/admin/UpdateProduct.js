@@ -67,6 +67,8 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
 
     const handleUpdateProduct = async (data) => {
         const invalids = validate(payload, setInvalidFields)
+        console.log("Form data: ", data);
+        console.log("Payload: ", payload);
         if (invalids === 0) {
             if (data.category) data.category = categories?.find(el => el.title === data.category)?.title
             const finalPayload = { ...data, ...payload }
@@ -76,7 +78,9 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
             finalPayload.images = data.images?.length === 0 ? preview.images : data.images
             for (let image of finalPayload.images) formData.append('images', image)
             dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }))
+            console.log("formData: ", formData);
             const response = await apiUpdateProduct(formData, editProduct._id)
+            console.log("Response: ", response);
             dispatch(showModal({ isShowModal: false, modalChildren: null }))
             if (response.success) {
                 Toast.success(response.mes)
