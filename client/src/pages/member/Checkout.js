@@ -17,15 +17,12 @@ const Checkout = ({ dispatch, navigate }) => {
   useEffect(() => {
     if (isPayMomo) {
       const handleBeforeUnload = (event) => {
-        // Custom message might not show in all modern browsers, but the default prompt will appear.
         event.preventDefault();
-        event.returnValue = ''; // Required for most browsers to show the confirmation dialog.
+        event.returnValue = '';
       };
 
-      // Add the event listener when the component mounts.
       window.addEventListener('beforeunload', handleBeforeUnload);
 
-      // Remove the event listener when the component unmounts.
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
@@ -63,8 +60,7 @@ const Checkout = ({ dispatch, navigate }) => {
     const payload = {
       products: currentCart,
       total: Math.round(
-        +currentCart?.reduce((sum, el) => +el?.price * el.quantity + sum, 0) /
-          23500
+        +currentCart?.reduce((sum, el) => +el?.price * el.quantity + sum, 0)
       ),
       address: current?.address,
     }
@@ -106,8 +102,7 @@ const Checkout = ({ dispatch, navigate }) => {
           }, 1500)
         }
       }
-    }, 60000)
-    window.location.reload();
+    }, 40000)
   }
   return (
     <div className="p-8 w-full grid grid-cols-10 h-full max-h-screen overflow-y-auto gap-6">

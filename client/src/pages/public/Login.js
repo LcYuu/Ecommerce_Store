@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { validate } from "ultils/helpers";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 
 const Login = () => {
@@ -56,34 +56,48 @@ const Login = () => {
   }, [isRegister]);
   // SUBMIT
   const handleSubmit = useCallback(async () => {
-    const { firstname, lastname, mobile, ...data } = payload;
+    try {
+      const { firstname, lastname, mobile, ...data } = payload;
 
-    const invalids = isRegister
-      ? validate(payload, setInvalidFields)
-      : validate(data, setInvalidFields);
-    if (invalids === 0) {
-      if (isRegister) {
-        dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
-        const response = await apiRegister(payload);
-        dispatch(showModal({ isShowModal: false, modalChildren: null }));
-        if (response.success) {
-          setIsVerifiedEmail(true);
-        } else Swal.fire("Oops!", response.mes, "error");
-      } else {
-        const rs = await apiLogin(data);
-        if (rs.success) {
-          dispatch(
-            login({
-              isLoggedIn: true,
-              token: rs.accessToken,
-              userData: rs.userData,
-            })
-          );
-          searchParams.get("redirect")
-            ? navigate(searchParams.get("redirect"))
-            : navigate(`/${path.HOME}`);
-        } else Swal.fire("Oops!", rs.mes, "error");
+      const invalids = isRegister
+        ? validate(payload, setInvalidFields)
+        : validate(data, setInvalidFields);
+
+      if (invalids === 0) {
+        if (isRegister) {
+          dispatch(showModal({ isShowModal: true, modalChildren: <Loading /> }));
+          const response = await apiRegister(payload);
+          dispatch(showModal({ isShowModal: false, modalChildren: null }));
+          
+          if (response.success) {
+            setIsVerifiedEmail(true);
+          } else {
+            Swal.fire("Oops!", response.mes, "error");
+          }
+        } else {
+          const rs = await apiLogin(data);
+          if (rs.success) {
+            dispatch(
+              login({
+                isLoggedIn: true,
+                token: rs.accessToken,
+                userData: rs.userData,
+              })
+            );
+            
+            if (searchParams.get("redirect")) {
+              navigate(searchParams.get("redirect"));
+            } else {
+              navigate(`/${path.HOME}`);
+            }
+          } else {
+            Swal.fire("Oops!", rs.mes, "error");
+          }
+        }
       }
+    } catch (error) {
+      console.error("Login/Register error:", error);
+      Swal.fire("Oops!", "Something went wrong!", "error");
     }
   }, [payload, isRegister]);
 
@@ -223,7 +237,7 @@ const Login = () => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-4 flex items-center cursor-pointer text-gray-500"
             >
-              {showPassword ? <VisibilityOff /> : <Visibility />}
+              {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
             </span>
           </div>
           <Button handleOnClick={handleSubmit} fw>

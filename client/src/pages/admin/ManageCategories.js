@@ -105,7 +105,7 @@ const ManageCategories = () => {
                   <BiEdit size={20} />
                 </span>
                 <span
-                  //onClick={() => handleDeleteProduct(el._id)}
+                  onClick={() => handleDeleteProduct(el._id)}
                   className="text-blue-500 hover:text-orange-500 inline-block hover:underline cursor-pointer px-1"
                 >
                   <RiDeleteBin6Line size={20} />

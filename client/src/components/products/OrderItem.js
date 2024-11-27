@@ -1,22 +1,58 @@
 import SelectQuantity from 'components/common/SelectQuantity'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { formatMoney } from 'ultils/helpers'
 import { updateCart } from 'store/user/userSlice'
 import withBaseComponent from 'hocs/withBaseComponent'
-const OrderItem = ({ dispatch, color, dfQuantity = 1, price, title, thumbnail, pid }) => {
+import { apiUpdateCart } from 'apis'
+import { getCurrent } from 'store/user/asyncActions'
+import toast from 'react-hot-toast'
+
+const OrderItem = ({ dispatch, color, dfQuantity = 1, price, title, thumbnail, pid, inStock }) => {
     const [quantity, setQuantity] = useState(() => dfQuantity)
-    const handleQuantity = (number) => {
-        if (+number > 1) setQuantity(number)
+    
+    const handleQuantity = async (number) => {
+        if (!Number(number) || Number(number) < 1) return
+        
+        const response = await apiUpdateCart({
+            pid,
+            quantity: number,
+            color,
+            price,
+            thumbnail,
+            title,
+            isUpdatingQuantity: true
+        })
+        
+        if (response.success) {
+            setQuantity(number)
+            dispatch(getCurrent())
+        } else {
+            toast.error(response.mes)
+        }
     }
-    const handleChangeQuantity = (flag) => {
+
+    const handleChangeQuantity = async (flag) => {
         if (flag === 'minus' && quantity === 1) return
-        if (flag === 'minus') setQuantity(prev => +prev - 1)
-        if (flag === 'plus') setQuantity(prev => +prev + 1)
+        
+        const newQuantity = flag === 'minus' ? quantity - 1 : quantity + 1
+        
+        const response = await apiUpdateCart({
+            pid,
+            quantity: newQuantity,
+            color,
+            price,
+            thumbnail,
+            title,
+            isUpdatingQuantity: true
+        })
+        
+        if (response.success) {
+            setQuantity(newQuantity)
+            dispatch(getCurrent())
+        } else {
+            toast.error(response.mes)
+        }
     }
-    useEffect(() => {
-        dispatch(updateCart({ pid, quantity, color }))
-    }, [quantity])
-    // Set quantity
 
     return (
         <div className='w-main mx-auto border-b font-bold py-3 grid grid-cols-10'>
@@ -35,6 +71,7 @@ const OrderItem = ({ dispatch, color, dfQuantity = 1, price, title, thumbnail, p
                         quantity={quantity}
                         handleQuantity={handleQuantity}
                         handleChangeQuantity={handleChangeQuantity}
+                        inStock={inStock}
                     />
                 </div>
             </span>
