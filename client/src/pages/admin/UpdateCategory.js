@@ -100,6 +100,7 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
       </div>
       <div className="p-4">
         <form onSubmit={handleSubmit(handleUpdateCategory)}>
+        <div className="space-y-8">
           <InputForm
             label="Name category"
             register={register}
@@ -130,6 +131,7 @@ const UpdateCategory = ({ editCategory, render, setEditCategory }) => {
             setInvalidFields={setInvalidFields}
             value={payload.description}
           />
+          </div>
           <div className="flex flex-col gap-2 mt-8">
             <label className="font-semibold" htmlFor="image">
               Upload image

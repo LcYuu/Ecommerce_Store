@@ -326,11 +326,11 @@ const ManageOrder = () => {
                   </span>
                 </td>
                 <td className="text-center py-2">
-                  {formatMoney(el.total * 23500) + " VND"}
+                  {formatMoney(el.total) + " VND"}
                 </td>
                 <td className="text-center py-2">
                   {renderOrderStatus(el)}
-                </td>
+                </td> 
                 <td className="text-center py-2">
                   {moment(el.createdAt).format("DD/MM/YYYY")}
                 </td>

@@ -1,11 +1,8 @@
-
 import React, { useState } from "react";
 import { Button } from "../../components";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiResetPassword } from "../../apis/user";
 import { toast } from "react-toastify";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -32,7 +29,6 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     if (!validatePassword(password)) return;
-
 
     if (password !== confirmPassword) {
       toast.error("Mật khẩu không trùng khớp!", { theme: "colored" });
@@ -74,7 +70,7 @@ const ResetPassword = () => {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
           >
-            {showPassword ? <VisibilityOff /> : <Visibility />}
+            {showPassword ? "Ẩn" : "Hiện"}
           </span>
         </div>
 
@@ -97,7 +93,7 @@ const ResetPassword = () => {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
           >
-            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+            {showConfirmPassword ? "Ẩn" : "Hiện"}
           </span>
         </div>
 
