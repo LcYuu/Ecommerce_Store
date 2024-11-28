@@ -112,7 +112,11 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
                             errors={errors}
                             id='price'
                             validate={{
-                                required: 'Need fill this field'
+                                required: 'Need fill this field',
+                                min: {
+                                    value: 1,
+                                    message: 'Giá phải lớn hơn 0'
+                                }
                             }}
                             style='flex-auto'
                             placeholder='Price of new product'
@@ -124,7 +128,12 @@ const UpdateProduct = ({ editProduct, render, setEditProduct }) => {
                             errors={errors}
                             id='quantity'
                             validate={{
-                                required: 'Need fill this field'
+                                required: 'Need fill this field',
+                                min: {
+                                    value: 1,
+                                    message: 'Nhập số lượng lớn hơn 0'
+                                }
+                                
                             }}
                             style='flex-auto'
                             placeholder='Quantity of new product'

@@ -39,6 +39,7 @@ const data = [
         brand: ['Samsung', 'Acer', 'Asus', 'Lenovo', 'Haier'],
         image: 'https://cdn.shopify.com/s/files/1/1903/4853/files/printer_300x.jpg?v=1613166810'
     },
+    
 ]
 
 module.exports = data

@@ -8,15 +8,15 @@ var productCategorySchema = new mongoose.Schema({
         unique: true,
         index: true,
     },
-    description: {
-        type: String,
-        required: true,
-    },
-    slug: {
-        type: String,
-        required: true,
-        lowercase: true
-    },
+    // description: {
+    //     type: String,
+    //     required: true,
+    // },
+    // slug: {
+    //     type: String,
+    //     required: true,
+    //     lowercase: true
+    // },
     brand: {
         type: Array,
         required: true,

@@ -80,7 +80,7 @@ const Dashboard = () => {
             icon={<img src="/dong.svg" className="h-6 object-contain" />}
             number={
               data?.totalSuccess?.length > 0
-                ? formatMoney(Math.round(data?.totalSuccess[0]?.count * 23500))
+                ? formatMoney(Math.round(data?.totalSuccess[0]?.count))
                 : 0
             }
             className="border-green-500 text-white bg-green-500"
@@ -90,7 +90,7 @@ const Dashboard = () => {
             icon={<img src="/dong.svg" className="h-6 object-contain" />}
             number={
               data?.totalFailed?.length > 0
-                ? formatMoney(Math.round(data?.totalFailed[0]?.count * 23500))
+                ? formatMoney(Math.round(data?.totalFailed[0]?.count))
                 : 0
             }
             className="border-orange-500 text-white bg-orange-500"

@@ -43,7 +43,9 @@ import { Cart, Modal } from "components";
 import { showCart } from "store/app/appSlice";
 import { AuthProvider } from './context/AuthProvider';
 
+
 function App() {
+  
   const dispatch = useDispatch();
   const { isShowModal, modalChildren, isShowCart } = useSelector(
     (state) => state.app

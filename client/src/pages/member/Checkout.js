@@ -102,7 +102,7 @@ const Checkout = ({ dispatch, navigate }) => {
           }, 1500)
         }
       }
-    }, 40000)
+    }, 60000)
   }
   return (
     <div className="p-8 w-full grid grid-cols-10 h-full max-h-screen overflow-y-auto gap-6">

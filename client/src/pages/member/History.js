@@ -226,7 +226,7 @@ const History = ({ navigate, location }) => {
                   ))}
                 </span>
               </td>
-              <td className="text-center py-2">{el.total + " 💲"}</td>
+              <td className="text-center py-2">{el.total.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</td>
               <td className="text-center py-2">
                 {renderStatusMessage(el.status, el._id)}
                 {el.statusMessage && (

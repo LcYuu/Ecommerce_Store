@@ -7,7 +7,11 @@ const createCategory = asyncHandler(async (req, res) => {
   const image = req?.files?.image[0]?.path;
   if (!(title && description && brand)) throw new Error("Missing inputs");
   req.body.slug = slugify(title);
-  const existingCategory = await ProductCategory.findOne({ title: title });
+  // const existingCategory = await ProductCategory.findOne({ title: title });
+  const normalizedTitle = title.toLowerCase();
+  const existingCategory = await ProductCategory.findOne({
+    title: { $regex: new RegExp('^' + normalizedTitle + '$', 'i') }
+  });
   if (existingCategory) {
     return res.status(409).json({
       success: false,
